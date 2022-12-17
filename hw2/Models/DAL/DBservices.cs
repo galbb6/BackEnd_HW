@@ -82,7 +82,7 @@ public class DBservices
     {
 
         SqlConnection con;
-       
+        SqlCommand cmd;
 
         try
         {
@@ -95,27 +95,28 @@ public class DBservices
         }
 
         List<Flat> list_flat = new List<Flat>();
-
-        SqlCommand cm = new SqlCommand("SELECT * from Flats_2022", con);
+        cmd = CreateCommandWithStoredProcedureGetAllFlats("spGetAllFlats", con);
+        
         try
         {
-            con.Open();
-            SqlDataReader reader = cm.ExecuteReader();
-            while (reader.Read())
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            while (dataReader.Read())
             {
-                var rec = new List<string>();
-                for (int i = 0; i <= reader.FieldCount - 1; i++) //The mathematical formula for reading the next fields must be <=
-                {
-                    rec.Add(reader.GetString(i));
-                }
-                list_flat.Add(new Flat (rec));
-
+                Flat f = new Flat();
+                f.Id = Convert.ToInt32(dataReader["id"]);
+                f.City = dataReader["city"].ToString();
+                f.Address = dataReader["address"].ToString();
+                f.Price = Convert.ToDouble(dataReader["price"]);
+                f.NumOfRooms = Convert.ToInt32(dataReader["rooms"]);
+                list_flat.Add(f);
             }
-            return list_flat;
-        }
+
+
+              
+        }       
         catch(Exception ex) { throw (ex); }
         finally { con.Close(); }
-
+        return list_flat;
     }
 
     //----------------------------------------------------------------
@@ -139,28 +140,6 @@ public class DBservices
 
         return cmd;
     }
-
-
-    //----------------------------------------
-    // Build the Get All Flats command String
-    //----------------------------------------
-    private String BuildGetAllCommand()
-    {
-        String command;
-
-        StringBuilder sb = new StringBuilder();
-        // use a string builder to create the dynamic string
-        sb.AppendFormat(" ");
-        String prefix = "SELECT * from Flats_2022 ";
-        command = prefix + sb.ToString();
-
-        return command;
-    }
-
-
-
-
-
 
 
     //--------------------------------------------------------------------------------------------------
