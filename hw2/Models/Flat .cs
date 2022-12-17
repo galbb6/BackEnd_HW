@@ -57,55 +57,13 @@ namespace AirBnb_Part_2.Models
 
 
         //--------------------------------------------------------------------------------------------------
-        // # INSERT FLAT TO LIST                              
-        //--------------------------------------------------------------------------------------------------
-
-        //public bool Insert()
-        //{
-            
-        //    try
-        //    {
-        //        if (FlatList != null)
-        //        {
-
-               
-        //          foreach (Flat item in FlatList)
-        //          {
-        //            if (this.Id == item.Id)
-        //            {
-        //                return false;
-                       
-        //            }
-        //          }
-        //           this.Price = this.Price / LIB_TO_DOLLAR;
-        //           this.Price =Discount(this.Price, this.NumOfRooms);
-                
-        //        FlatList.Add(this);
-
-        //        return true;
-        //        }
-        //        else
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //    catch (Exception exp)
-        //    {
-        //        // write to error log file
-        //        throw new Exception(" Didn't succeed in inserting Flat " + exp.Message);
-                
-               
-        //    }
-        //}
-
-
-        //--------------------------------------------------------------------------------------------------
         // # RETURN FLATS LIST                                
         //--------------------------------------------------------------------------------------------------
 
         public static List<Flat> Read()
         {
-            return FlatList;
+            DBservices dbs = new DBservices();
+            return dbs.getFlatsFromDB();
 
         }
 
@@ -155,6 +113,49 @@ namespace AirBnb_Part_2.Models
             DBservices dbs = new DBservices();
             return dbs.DeleteFlatFromDB(id);
         }
+
+
+        //--------------------------------------------------------------------------------------------------
+        // # INSERT FLAT TO LIST                              
+        //--------------------------------------------------------------------------------------------------
+
+        //public bool Insert()
+        //{
+            
+        //    try
+        //    {
+        //        if (FlatList != null)
+        //        {
+
+               
+        //          foreach (Flat item in FlatList)
+        //          {
+        //            if (this.Id == item.Id)
+        //            {
+        //                return false;
+                       
+        //            }
+        //          }
+        //           this.Price = this.Price / LIB_TO_DOLLAR;
+        //           this.Price =Discount(this.Price, this.NumOfRooms);
+                
+        //        FlatList.Add(this);
+
+        //        return true;
+        //        }
+        //        else
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception exp)
+        //    {
+        //        // write to error log file
+        //        throw new Exception(" Didn't succeed in inserting Flat " + exp.Message);
+                
+               
+        //    }
+        //}
 
 
     }

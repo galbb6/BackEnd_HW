@@ -6,6 +6,10 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Text;
 using AirBnb_Part_2.Models;
+using MySql.Data.MySqlClient;
+using Microsoft.AspNetCore.Http;
+using System.Reflection.PortableExecutable;
+using Microsoft.TeamFoundation.Build.WebApi;
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -72,6 +76,94 @@ public class DBservices
     //--------------------------------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------------------------------
+    // # GET ALL FLATS                               
+    //--------------------------------------------------------------------------------------------------
+    public List<Flat> getFlatsFromDB()
+    {
+
+        SqlConnection con;
+       
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        List<Flat> list_flat = new List<Flat>();
+
+        SqlCommand cm = new SqlCommand("SELECT * from Flats_2022", con);
+        try
+        {
+            con.Open();
+            SqlDataReader reader = cm.ExecuteReader();
+            while (reader.Read())
+            {
+                var rec = new List<string>();
+                for (int i = 0; i <= reader.FieldCount - 1; i++) //The mathematical formula for reading the next fields must be <=
+                {
+                    rec.Add(reader.GetString(i));
+                }
+                list_flat.Add(new Flat (rec));
+
+            }
+            return list_flat;
+        }
+        catch(Exception ex) { throw (ex); }
+        finally { con.Close(); }
+
+    }
+
+    //----------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure to Get All Flats
+    //----------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetAllFlats(String spName, SqlConnection con)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+
+
+        return cmd;
+    }
+
+
+    //----------------------------------------
+    // Build the Get All Flats command String
+    //----------------------------------------
+    private String BuildGetAllCommand()
+    {
+        String command;
+
+        StringBuilder sb = new StringBuilder();
+        // use a string builder to create the dynamic string
+        sb.AppendFormat(" ");
+        String prefix = "SELECT * from Flats_2022 ";
+        command = prefix + sb.ToString();
+
+        return command;
+    }
+
+
+
+
+
+
+
+    //--------------------------------------------------------------------------------------------------
     // # INSERT FLAT                               
     //--------------------------------------------------------------------------------------------------
 
@@ -119,6 +211,13 @@ public class DBservices
         }
 
     }
+
+
+
+
+
+
+
 
     //----------------------------------------------------------------
     // Create the SqlCommand using a stored procedure to Update Flat
