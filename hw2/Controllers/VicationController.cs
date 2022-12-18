@@ -13,19 +13,19 @@ namespace AirBnb_Part_2.Controllers
     {
         // GET: api/<VixationController>
         [HttpGet]
-        public List<Vication> Get()
+        public List<Vacation> Get()
         {
-            return Vication.Read();
+            return Vacation.Read();
         }
 
         // GET api/<VixationController>/5
         [HttpGet("{id}")]
         public bool Get(int id)
         {
-            List<Vication> V = Vication.Read();
+            List<Vacation> V = Vacation.Read();
             foreach (var item in V)
             {
-                if (item.Id == id)
+                if (item.id == id)
                 {
                     return true;
                 }
@@ -35,9 +35,9 @@ namespace AirBnb_Part_2.Controllers
         }
 
         [HttpGet("getByDates/startDate/{startDate}/endDate/{endDate}")]
-        public List<Vication> getByDates(DateTime startDate, DateTime endDate)
+        public List<Vacation> getByDates(DateTime startDate, DateTime endDate)
         {
-            List<Vication> VList = Vication.getByDatesOrders(startDate, endDate);
+            List<Vacation> VList = Vacation.getByDatesOrders(startDate, endDate);
             
                 if (VList.Count>=0)
                 {
@@ -50,9 +50,9 @@ namespace AirBnb_Part_2.Controllers
         }
         // POST api/<VixationController>
         [HttpPost]
-        public bool Post([FromBody] Vication V)
+        public int Post([FromBody] Vacation V)
         {
-            return V.Insert();
+            return V.Insert(V);
         }
 
         // PUT api/<VixationController>/5

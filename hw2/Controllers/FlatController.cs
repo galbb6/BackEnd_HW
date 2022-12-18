@@ -30,7 +30,7 @@ namespace AirBnb_Part_2.Controllers
              List< Flat > F = Flat.Read();
             foreach (var item in F)
             {
-                if (item.Id == id)
+                if (item.FlatId == id)
                 {
                     return true;
                 }
@@ -82,7 +82,7 @@ namespace AirBnb_Part_2.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Flat flat)
         {
-            flat.Id = id;
+            flat.FlatId = id;
             int temp = flat.UpdateFlat(flat);
             if (temp > 0)
             {

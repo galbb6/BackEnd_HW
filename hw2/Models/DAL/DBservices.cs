@@ -10,6 +10,7 @@ using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http;
 using System.Reflection.PortableExecutable;
 using Microsoft.TeamFoundation.Build.WebApi;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -103,7 +104,7 @@ public class DBservices
             while (dataReader.Read())
             {
                 Flat f = new Flat();
-                f.Id = Convert.ToInt32(dataReader["id"]);
+                f.FlatId = Convert.ToInt32(dataReader["FlatId"]);
                 f.City = dataReader["city"].ToString();
                 f.Address = dataReader["address"].ToString();
                 f.Price = Convert.ToDouble(dataReader["price"]);
@@ -190,13 +191,6 @@ public class DBservices
         }
 
     }
-
-
-
-
-
-
-
 
     //----------------------------------------------------------------
     // Create the SqlCommand using a stored procedure to Update Flat
@@ -310,7 +304,7 @@ public class DBservices
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
 
-        cmd.Parameters.AddWithValue("@id", flat.Id);
+        cmd.Parameters.AddWithValue("@FlatId", flat.FlatId);
 
         cmd.Parameters.AddWithValue("@city", flat.City);
 
@@ -399,7 +393,7 @@ public class DBservices
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
 
-        cmd.Parameters.AddWithValue("@id", id);
+        cmd.Parameters.AddWithValue("@FlatId", id);
 
 
 
@@ -418,11 +412,86 @@ public class DBservices
     //--------------------------------------------------------------------------------------------------
     // # INSERT VACATION                               
     //--------------------------------------------------------------------------------------------------
+    //--------------------------------------------------
+    // This method inserts a vacation to the vacations table 
+    //--------------------------------------------------
+    public int InsertVacationToDB(Vacation vacation)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureInsertFlat("spInsertVacation", con, vacation);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //----------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure to Update Flat
+    //----------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureInsertFlat(String spName, SqlConnection con, Vacation vacation)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+        cmd.Parameters.AddWithValue("@EndDate", vacation.EndDate);
+
+        cmd.Parameters.AddWithValue("@StartDate", vacation.StartDate);
+
+        cmd.Parameters.AddWithValue("@UserId", vacation.UserId);
+
+        cmd.Parameters.AddWithValue("@FlatId", vacation.FlatId);
+
+
+
+
+        return cmd;
+    }
 
     //---------------------------------------------------------
     // This method inserts a Vacation to the Vacations table 
     //---------------------------------------------------------
-    public int InsertVacation(Vication vacation)
+    public int InsertVacation(Vacation vacation)
     {
 
         SqlConnection con;
@@ -467,7 +536,7 @@ public class DBservices
     //----------------------------------------
     // Build the Insert Vacation command String
     //----------------------------------------
-    private String BuildInsertCommand(Vication vacation)
+    private String BuildInsertCommand(Vacation vacation)
     {
         String command;
 
@@ -487,8 +556,70 @@ public class DBservices
 
 
     //--------------------------------------------------------------------------------------------------
-    // # GET VACATION                               
+    // # GET ALL VACATIONS                              
     //--------------------------------------------------------------------------------------------------
+    public List<Vacation> getVacationFromDB()
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        List<Vacation> list_vacations = new List<Vacation>();
+        cmd = CreateCommandWithStoredProcedureGetAllvacations("spGetAllVacations", con);
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            while (dataReader.Read())
+            {
+                Vacation v = new Vacation();
+                v.id = Convert.ToInt32(dataReader["id"]);
+                v.UserId = Convert.ToInt32(dataReader["UserId"]);
+                v.FlatId = Convert.ToInt32(dataReader["FlatId"]);
+                v.StartDate = Convert.ToDateTime(dataReader["StartDate"]);
+                v.EndDate = Convert.ToDateTime(dataReader["EndDate"]);
+                list_vacations.Add(v);
+            }
+
+
+
+        }
+        catch (Exception ex) { throw (ex); }
+        finally { con.Close(); }
+        return list_vacations;
+    }
+
+    //----------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure to GET ALL VACATIONS   
+    //----------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetAllvacations(String spName, SqlConnection con)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+
+
+        return cmd;
+    }
 
 
     //--------------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@ namespace AirBnb_Part_2.Models
     {
 
         private double LIB_TO_DOLLAR = 3.55;
-        public int Id { get; set; }
+        public int FlatId { get; set; }
         public string City { get; set; }
         public string Address { get; set; }
         public double Price { get; set; }
@@ -22,7 +22,7 @@ namespace AirBnb_Part_2.Models
         {
             foreach (Flat item in FlatList)
             {
-                if (item.Id == Id)
+                if (item.FlatId == FlatId)
                 {
 
                     return false;
