@@ -12,8 +12,10 @@
 
         private static List<Vacation> OrderesList = new List<Vacation>();
 
-  
-        public  int Insert(Vacation v)
+        //--------------------------------------------------------------------------------------------------
+        // # INSERT VACATION                               
+        //--------------------------------------------------------------------------------------------------
+        public int Insert(Vacation v)
         {
           try
             {
@@ -45,10 +47,16 @@
          
 
         }
-
+        //--------------------------------------------------------------------------------------------------
+        // # GET VACATION  BY DATES                            
+        //--------------------------------------------------------------------------------------------------
         public static List<Vacation> getByDatesOrders(DateTime startDate, DateTime endDate)
         {
             List<Vacation> tempList = new List<Vacation>();
+
+            DBservices dbs = new DBservices();
+            OrderesList = dbs.getVacationFromDB();
+
             foreach (Vacation item in OrderesList)
             {
                 if (item.StartDate>= startDate && item.EndDate<=endDate)
@@ -59,7 +67,9 @@
 
             return tempList ;
         }
-
+        //--------------------------------------------------------------------------------------------------
+        // # GET ALL VACATIONS                               
+        //--------------------------------------------------------------------------------------------------
         public static  List<Vacation> Read()
         {
             DBservices dbs = new DBservices();
@@ -68,7 +78,28 @@
 
 
         }
+        //--------------------------------------------------------------------------------------------------
+        // # UPDATE VACATION                             
+        //--------------------------------------------------------------------------------------------------
+        public int UpdateVacation(Vacation vacation)
+        {
 
+            DBservices dbs = new DBservices();
+            return dbs.UpdateVacationToDB(vacation);
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # DELETE VACATION                             
+        //--------------------------------------------------------------------------------------------------
+        public int DeleteVacation(int id)
+        {
+            DBservices dbs = new DBservices();
+            return dbs.DeleteVacationFromDB(id);
+
+
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # CHECK VACATION VALIDATION BY DATES <HELPER>                              
+        //--------------------------------------------------------------------------------------------------
         public bool CheckVicationDates()
         {
             // הפונקציה מקבלת חופשה מסויימת ובודקת האם אפשר לסגור אותה מבחינת תאריכים
@@ -95,12 +126,6 @@
                   return false;
         }
 
-        public int InsertVacationToDB(Vacation v)
-        {
-            DBservices dbs = new DBservices();
-
-            return dbs.InsertVacation(v);
-        }
-
+      
     }
 }

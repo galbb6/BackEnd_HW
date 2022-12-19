@@ -42,6 +42,8 @@ namespace AirBnb_Part_2.Models
             List<Flat> tempList = new List<Flat>();
             price = price / 3.55;
 
+            DBservices dbs = new DBservices();
+            FlatList =  dbs.getFlatsFromDB();
 
             foreach (Flat item in FlatList)
             {

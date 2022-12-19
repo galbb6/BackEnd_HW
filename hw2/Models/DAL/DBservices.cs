@@ -72,6 +72,11 @@ public class DBservices
         return cmd;
     }
 
+
+
+
+
+
     //--------------------------------------------------------------------------------------------------
     //                                 **********FLATS*************
     //--------------------------------------------------------------------------------------------------
@@ -120,9 +125,7 @@ public class DBservices
         return list_flat;
     }
 
-    //----------------------------------------------------------------
     // Create the SqlCommand using a stored procedure to Get All Flats
-    //----------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureGetAllFlats(String spName, SqlConnection con)
     {
 
@@ -142,14 +145,11 @@ public class DBservices
         return cmd;
     }
 
-
     //--------------------------------------------------------------------------------------------------
     // # INSERT FLAT                               
     //--------------------------------------------------------------------------------------------------
 
-    //--------------------------------------------------
     // This method inserts a Flat to the Flats table 
-    //--------------------------------------------------
     public int InsertFlatToDB(Flat flat)
     {
 
@@ -191,10 +191,7 @@ public class DBservices
         }
 
     }
-
-    //----------------------------------------------------------------
     // Create the SqlCommand using a stored procedure to Update Flat
-    //----------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureInsertFlat(String spName, SqlConnection con, Flat flat)
     {
 
@@ -223,30 +220,11 @@ public class DBservices
         return cmd;
     }
 
-    //----------------------------------------
-    // Build the Insert Flat command String
-    //----------------------------------------
-    private String BuildInsertCommand(Flat flat)
-    {
-        String command;
-
-        StringBuilder sb = new StringBuilder();
-        // use a string builder to create the dynamic string
-        sb.AppendFormat("Values('{0}', '{1}', {2}, {3})", flat.City, flat.Address, flat.Price, flat.NumOfRooms);
-        String prefix = "INSERT INTO Flats_2022 " + "([city],[address],[price],[rooms]) ";
-        command = prefix + sb.ToString();
-
-        return command;
-    }
-    
-
     //--------------------------------------------------------------------------------------------------
     // # UPDATE FLAT                               
     //--------------------------------------------------------------------------------------------------
 
-    //--------------------------------------------------
     // This method update a Flat to the Flats table 
-    //--------------------------------------------------
     public int UpdateFlatToDB(Flat flat)
     {
 
@@ -288,9 +266,7 @@ public class DBservices
         }
 
     }
-    //----------------------------------------------------------------
     // Create the SqlCommand using a stored procedure to Update Flat
-    //----------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureUpdateFlat(String spName, SqlConnection con, Flat flat)
     {
 
@@ -321,20 +297,8 @@ public class DBservices
     }
 
     //--------------------------------------------------------------------------------------------------
-    // # GET FLAT                               
-    //--------------------------------------------------------------------------------------------------
-
-
-
-
-    //--------------------------------------------------------------------------------------------------
     // # DELETE FLAT                               
     //--------------------------------------------------------------------------------------------------
-
-    //---------------------------------------
-    // TODO Build the Flat Delete  method
-    // DeleteFlight(int id)
-    //---------------------------------------
     public int DeleteFlatFromDB(int id)
     {
 
@@ -377,9 +341,7 @@ public class DBservices
 
     }
 
-    //-------------------------------------------------
     // Create the SqlCommand using a stored procedure
-    //-------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureDeleteFlat(String spName, SqlConnection con, int id)
     {
 
@@ -393,15 +355,12 @@ public class DBservices
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
 
-        cmd.Parameters.AddWithValue("@FlatId", id);
-
-
-
-
-
+        cmd.Parameters.AddWithValue("@id", id);
 
         return cmd;
     }
+
+
 
 
 
@@ -412,9 +371,8 @@ public class DBservices
     //--------------------------------------------------------------------------------------------------
     // # INSERT VACATION                               
     //--------------------------------------------------------------------------------------------------
-    //--------------------------------------------------
+
     // This method inserts a vacation to the vacations table 
-    //--------------------------------------------------
     public int InsertVacationToDB(Vacation vacation)
     {
 
@@ -433,7 +391,7 @@ public class DBservices
 
         //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
 
-        cmd = CreateCommandWithStoredProcedureInsertFlat("spInsertVacation", con, vacation);             // create the command
+        cmd = CreateCommandWithStoredProcedureInsertVacation("spInsertVacation", con, vacation);             // create the command
 
         try
         {
@@ -457,10 +415,8 @@ public class DBservices
 
     }
 
-    //----------------------------------------------------------------
-    // Create the SqlCommand using a stored procedure to Update Flat
-    //----------------------------------------------------------------
-    private SqlCommand CreateCommandWithStoredProcedureInsertFlat(String spName, SqlConnection con, Vacation vacation)
+    // Create the SqlCommand using a stored procedure to Update Vacation
+    private SqlCommand CreateCommandWithStoredProcedureInsertVacation(String spName, SqlConnection con, Vacation vacation)
     {
 
         SqlCommand cmd = new SqlCommand(); // create the command object
@@ -488,10 +444,10 @@ public class DBservices
         return cmd;
     }
 
-    //---------------------------------------------------------
-    // This method inserts a Vacation to the Vacations table 
-    //---------------------------------------------------------
-    public int InsertVacation(Vacation vacation)
+    //--------------------------------------------------------------------------------------------------
+    // # UPDATE VACATION                               
+    //--------------------------------------------------------------------------------------------------
+         public int UpdateVacationToDB(Vacation vacation)
     {
 
         SqlConnection con;
@@ -507,9 +463,9 @@ public class DBservices
             throw (ex);
         }
 
-        String cStr = BuildInsertCommand(vacation);      // helper method to build the insert string
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
 
-        cmd = CreateCommand(cStr, con);             // create the command
+        cmd = CreateCommandWithStoredProcedureUpdateVacation("spUpdateVacation", con, vacation);             // create the command
 
         try
         {
@@ -533,28 +489,35 @@ public class DBservices
 
     }
 
-    //----------------------------------------
-    // Build the Insert Vacation command String
-    //----------------------------------------
-    private String BuildInsertCommand(Vacation vacation)
+    // Create the SqlCommand using a stored procedure to UPDATE VACATION  
+    private SqlCommand CreateCommandWithStoredProcedureUpdateVacation(String spName, SqlConnection con, Vacation vacation)
     {
-        String command;
 
-        StringBuilder sb = new StringBuilder();
-        // use a string builder to create the dynamic string
-        sb.AppendFormat("Values({0}, {1}, '{2}', '{3}')", vacation.UserId, vacation.FlatId, vacation.StartDate, vacation.EndDate);
-        String prefix = "INSERT INTO Vacations_2022 " + "([UserId],[FlatId],[StartDate],[EndDate]) ";
-        command = prefix + sb.ToString();
+        SqlCommand cmd = new SqlCommand(); // create the command object
 
-        return command;
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@id", vacation.id);
+
+        cmd.Parameters.AddWithValue("@EndDate", vacation.EndDate);
+
+        cmd.Parameters.AddWithValue("@StartDate", vacation.StartDate);
+
+        cmd.Parameters.AddWithValue("@UserId", vacation.UserId);
+
+        cmd.Parameters.AddWithValue("@FlatId", vacation.FlatId);
+
+
+
+
+        return cmd;
     }
-
-
-    //--------------------------------------------------------------------------------------------------
-    // # UPDATE VACATION                               
-    //--------------------------------------------------------------------------------------------------
-
-
     //--------------------------------------------------------------------------------------------------
     // # GET ALL VACATIONS                              
     //--------------------------------------------------------------------------------------------------
@@ -599,9 +562,9 @@ public class DBservices
         return list_vacations;
     }
 
-    //----------------------------------------------------------------
+  
     // Create the SqlCommand using a stored procedure to GET ALL VACATIONS   
-    //----------------------------------------------------------------
+
     private SqlCommand CreateCommandWithStoredProcedureGetAllvacations(String spName, SqlConnection con)
     {
 
@@ -626,13 +589,66 @@ public class DBservices
     // # DELETE VACATION                               
     //--------------------------------------------------------------------------------------------------
 
+    public int DeleteVacationFromDB(int id)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureDeleteVacation("spDeleteVacation", con, id);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
 
 
+    private SqlCommand CreateCommandWithStoredProcedureDeleteVacation(String spName, SqlConnection con, int id)
+    {
 
+        SqlCommand cmd = new SqlCommand(); // create the command object
 
+        cmd.Connection = con;              // assign the connection to the command object
 
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
 
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
 
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@id", id);
+
+        return cmd;
+    }
 
 
 

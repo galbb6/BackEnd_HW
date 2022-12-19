@@ -11,29 +11,39 @@ namespace AirBnb_Part_2.Controllers
     [ApiController]
     public class VicationController : ControllerBase
     {
+        //--------------------------------------------------------------------------------------------------
+        // # GET ALL VACATION                               
+        //--------------------------------------------------------------------------------------------------
+
         // GET: api/<VixationController>
-        [HttpGet]
+        [HttpGet("getAllVications")]
         public List<Vacation> Get()
         {
             return Vacation.Read();
         }
-
+        //--------------------------------------------------------------------------------------------------
+        // # GET VACATION  BY ID                             
+        //--------------------------------------------------------------------------------------------------
         // GET api/<VixationController>/5
-        [HttpGet("{id}")]
-        public bool Get(int id)
+
+        [HttpGet("GetVacationByID/id/{id}")]
+        public Vacation Get(int id)
         {
+
             List<Vacation> V = Vacation.Read();
             foreach (var item in V)
             {
                 if (item.id == id)
                 {
-                    return true;
+                    return item;
                 }
 
             }
-            return false;
+            return null;
         }
-
+        //--------------------------------------------------------------------------------------------------
+        // # GET VACATION BY DATES                               
+        //--------------------------------------------------------------------------------------------------
         [HttpGet("getByDates/startDate/{startDate}/endDate/{endDate}")]
         public List<Vacation> getByDates(DateTime startDate, DateTime endDate)
         {
@@ -48,23 +58,61 @@ namespace AirBnb_Part_2.Controllers
             
             return null;
         }
+
+        //--------------------------------------------------------------------------------------------------
+        // # INSERT VACATION                               
+        //--------------------------------------------------------------------------------------------------
         // POST api/<VixationController>
-        [HttpPost]
+        [HttpPost("Insert Vacation")]
         public int Post([FromBody] Vacation V)
         {
             return V.Insert(V);
         }
 
-        // PUT api/<VixationController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //--------------------------------------------------------------------------------------------------
+        // # UPDATE VACATION                               
+        //--------------------------------------------------------------------------------------------------
 
-        // DELETE api/<VixationController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // PUT api/<VixationController>/5
+        [HttpPut("Update Vication")]
+        public IActionResult Put(int id, [FromBody] Vacation vacation)
         {
+            vacation.id = id;
+            int temp = vacation.UpdateVacation(vacation);
+            if (temp > 0)
+            {
+                return Ok();
+            }
+            else
+
+            {
+                return NotFound("id " + id.ToString() + " was not update");
+            }
+
+
+
+
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # DELETE VACATION                               
+        //--------------------------------------------------------------------------------------------------
+        // DELETE api/<VixationController>/5
+        [HttpDelete("Delete Vacation By{id}")]
+        public IActionResult Delete(int id)
+        {
+            Vacation v = new Vacation();
+            int temp = v.DeleteVacation(id);
+            if (temp > 0)
+            {
+                return Ok();
+            }
+            else
+
+            {
+                return NotFound("id " + id.ToString() + " was not found");
+            }
+
+
         }
        
 
