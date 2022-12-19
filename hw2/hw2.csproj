@@ -20,8 +20,6 @@
     <None Remove="System.Data.SqlClient" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
     <Folder Include="Models\DAL\" />
   </ItemGroup>
 </Project>

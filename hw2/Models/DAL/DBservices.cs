@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.Reflection.PortableExecutable;
 using Microsoft.TeamFoundation.Build.WebApi;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using hw2.Models;
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -654,9 +655,74 @@ public class DBservices
 
 
 
+    //--------------------------------------------------------------------------------------------------
+    //                                 **********USERS*************
+    //--------------------------------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------------------------------
+    // # GET ALL USERS                               
+    //--------------------------------------------------------------------------------------------------
+
+
+    public List<User> getUserFromDB()
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+       
+        List<User> list_users = new List<User>();
+        cmd = CreateCommandWithStoredProcedureGetAllUsers("spGetAllUsers", con);
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            while (dataReader.Read())
+            {
+                User u = new User();
+                u.UserId = Convert.ToInt32(dataReader["UserId"]);
+                u.UserPassword = Convert.ToString(dataReader["UserPassword"]);
+               u.familyName = Convert.ToString(dataReader["familyName"]);
+                u.firstName = Convert.ToString(dataReader["firstName"]);
+                u.email = Convert.ToString(dataReader["email"]);
+                list_users.Add(u);
+            }
 
 
 
+        }
+        catch (Exception ex) { throw (ex); }
+        finally { con.Close(); }
+        return list_users;
+    }
+
+
+    // Create the SqlCommand using a stored procedure to GET ALL USERS   
+
+    private SqlCommand CreateCommandWithStoredProcedureGetAllUsers(String spName, SqlConnection con)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        return cmd;
+    }
 
 
 
