@@ -882,7 +882,7 @@ public class DBservices
 
     
 
-   public int DeleteUserProfile(int id)
+   public int DeleteUserProfile(string email)
     {
 
         SqlConnection con;
@@ -900,7 +900,7 @@ public class DBservices
 
         //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
 
-        cmd = CreateCommandWithStoredProcedureDeleteUser("spDeleteUser", con, id);             // create the command
+        cmd = CreateCommandWithStoredProcedureDeleteUser("spDeleteUser", con, email);             // create the command
 
         try
         {
@@ -925,7 +925,7 @@ public class DBservices
     }
 
 
-    private SqlCommand CreateCommandWithStoredProcedureDeleteUser(String spName, SqlConnection con, int id)
+    private SqlCommand CreateCommandWithStoredProcedureDeleteUser(String spName, SqlConnection con, string email)
     {
 
         SqlCommand cmd = new SqlCommand(); // create the command object
@@ -938,7 +938,74 @@ public class DBservices
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
 
-        cmd.Parameters.AddWithValue("@id", id);
+        cmd.Parameters.AddWithValue("@email", email);
+
+        return cmd;
+    }
+
+
+    //--------------------------------------------------------------------------------------------------
+    // # DELETE USER From DB                              
+    //--------------------------------------------------------------------------------------------------
+
+    public int GetAccessFromDB(string email, string password)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureGetAccess("spGetUserAccess", con, email,password);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+
+    private SqlCommand CreateCommandWithStoredProcedureGetAccess(String spName, SqlConnection con, string email, string password)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@email", email);
+        cmd.Parameters.AddWithValue("@password", password);
 
         return cmd;
     }

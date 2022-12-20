@@ -25,19 +25,21 @@ namespace AirBnb_Part_2.Controllers
         }
 
         // GET api/<UserController>/5
-        [HttpGet("Get User By {id}")]
-        public UserProfile Get(int id)
+        [HttpGet("Get User/email/{email}/password/{password}")]
+        public bool GetUser(string email, string password)
         {
-            List<UserProfile> U = UserProfile.Read();
-            foreach (var item in U)
-            {
-                if (item.UserId == id)
-                {
-                    return item;
-                }
 
+            UserProfile user = new UserProfile();
+            int temp = user.GetAccess(email,password);
+            if (temp > 0)
+            {
+                return true;
             }
-            return null;
+            else
+
+            {
+                return false;
+            }
 
         }
 
@@ -69,11 +71,11 @@ namespace AirBnb_Part_2.Controllers
         }
 
         // DELETE api/<UserController>/5
-        [HttpDelete("Delete User By{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("Delete User/email/{email}")]
+        public IActionResult Delete(string email)
         {
            
-            int temp = UserProfile.DeleteUserProfile(id);
+            int temp = UserProfile.DeleteUserProfile(email);
             if (temp > 0)
             {
                 return Ok();
@@ -81,7 +83,7 @@ namespace AirBnb_Part_2.Controllers
             else
 
             {
-                return NotFound("id " + id.ToString() + " was not found");
+                return NotFound("user with this email :  " + email.ToString() + " , was not found");
             }
 
 

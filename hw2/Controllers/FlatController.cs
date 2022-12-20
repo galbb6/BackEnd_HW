@@ -100,11 +100,11 @@ namespace AirBnb_Part_2.Controllers
         // # DELETE FLAT                            
         //--------------------------------------------------------------------------------------------------
 
-        [HttpDelete("Delete Flat By {id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("Delete Flat/flatId/{flatId}")]
+        public IActionResult Delete(int flatId)
         {
             Flat f = new Flat();
-            int temp = f.DeleteFlat(id);
+            int temp = f.DeleteFlat(flatId);
             if (temp > 0)
             {
                 return Ok();
@@ -112,7 +112,7 @@ namespace AirBnb_Part_2.Controllers
             else
 
             {
-                return NotFound("id "+id.ToString()+" was not found");
+                return NotFound("id "+ flatId.ToString()+" was not found");
             }
         }
 

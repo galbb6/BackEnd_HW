@@ -48,12 +48,21 @@ namespace AirBnb_Part_2.Models
         //--------------------------------------------------------------------------------------------------
         // # DELETE USER PROFILE                             
         //--------------------------------------------------------------------------------------------------
-        public static int DeleteUserProfile(int id)
+        public static int DeleteUserProfile(string email)
         {
             DBservices dbs = new DBservices();
-            return dbs.DeleteUserProfile(id);
+            return dbs.DeleteUserProfile(email);
         }
-        
+        //--------------------------------------------------------------------------------------------------
+        // # FIND USER PROFILE                             
+        //--------------------------------------------------------------------------------------------------
+        public int GetAccess(string email, string password)
+        {
+            DBservices dbs = new DBservices();
+
+            return dbs.GetAccessFromDB(email, password);
+        }
+
 
 
     }
