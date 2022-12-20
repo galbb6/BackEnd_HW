@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.Reflection.PortableExecutable;
 using Microsoft.TeamFoundation.Build.WebApi;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
-using hw2.Models;
+
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -664,7 +664,7 @@ public class DBservices
     //--------------------------------------------------------------------------------------------------
 
 
-    public List<User> getUserFromDB()
+    public List<UserProfile> getUserFromDB()
     {
 
         SqlConnection con;
@@ -680,7 +680,7 @@ public class DBservices
             throw (ex);
         }
        
-        List<User> list_users = new List<User>();
+        List<UserProfile> list_users = new List<UserProfile>();
         cmd = CreateCommandWithStoredProcedureGetAllUsers("spGetAllUsers", con);
 
         try
@@ -688,7 +688,7 @@ public class DBservices
             SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
             while (dataReader.Read())
             {
-                User u = new User();
+                UserProfile u = new UserProfile();
                 u.UserId = Convert.ToInt32(dataReader["UserId"]);
                 u.UserPassword = Convert.ToString(dataReader["UserPassword"]);
                u.familyName = Convert.ToString(dataReader["familyName"]);
@@ -724,6 +724,224 @@ public class DBservices
         return cmd;
     }
 
+
+
+    //--------------------------------------------------------------------------------------------------
+    // # INSERT USER TO DB                              
+    //--------------------------------------------------------------------------------------------------
+
+    public int InsertUserToDB(UserProfile profile)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureInsertUser("spInsertUser", con, profile);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+    // Create the SqlCommand using a stored procedure to Insert User Profile
+    private SqlCommand CreateCommandWithStoredProcedureInsertUser(String spName, SqlConnection con, UserProfile profile)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+        cmd.Parameters.AddWithValue("@firstName", profile.firstName);
+
+        cmd.Parameters.AddWithValue("@familyName", profile.familyName);
+
+        cmd.Parameters.AddWithValue("@email", profile.email);
+
+        cmd.Parameters.AddWithValue("@UserPassword", profile.UserPassword);
+
+
+
+
+        return cmd;
+    }
+
+
+
+    //--------------------------------------------------------------------------------------------------
+    // # Update USER IN DB                              
+    //--------------------------------------------------------------------------------------------------
+    public int UpdateUserToDB(UserProfile profile)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureUpdateUser("spUpdateUser", con, profile);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    // Create the SqlCommand using a stored procedure to UPDATE VACATION  
+    private SqlCommand CreateCommandWithStoredProcedureUpdateUser(String spName, SqlConnection con, UserProfile profile)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@Userid", profile.UserId);
+
+        cmd.Parameters.AddWithValue("@firstName", profile.firstName);
+
+        cmd.Parameters.AddWithValue("@familyName", profile.familyName);
+
+        cmd.Parameters.AddWithValue("@email", profile.email);
+
+        cmd.Parameters.AddWithValue("@UserPassword", profile.UserPassword);
+
+
+
+
+        return cmd;
+    }
+    //--------------------------------------------------------------------------------------------------
+    // # DELETE USER From DB                              
+    //--------------------------------------------------------------------------------------------------
+
+    
+
+   public int DeleteUserProfile(int id)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureDeleteUser("spDeleteUser", con, id);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+
+    private SqlCommand CreateCommandWithStoredProcedureDeleteUser(String spName, SqlConnection con, int id)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@id", id);
+
+        return cmd;
+    }
 
 
 }

@@ -1,8 +1,8 @@
-﻿using System.Security.Claims;
+﻿
 
 namespace AirBnb_Part_2.Models
 {
-    public class User
+    public class UserProfile
     {
 
     
@@ -12,21 +12,48 @@ namespace AirBnb_Part_2.Models
         public string email { get; set; }
         public string UserPassword { get; set; }
 
-        private static List<User> UsersList = new List<User>();
+        private static List<UserProfile> UsersList = new List<UserProfile>();
 
-
-        public static List<User> Read()
+        //--------------------------------------------------------------------------------------------------
+        // # GET ALL USERS                           
+        //--------------------------------------------------------------------------------------------------
+        public static List<UserProfile> Read()
         {
             DBservices dbs = new DBservices();
             UsersList = dbs.getUserFromDB();
             return UsersList;
         }
 
+        //--------------------------------------------------------------------------------------------------
+        // # INSERT NEW USER                            
+        //--------------------------------------------------------------------------------------------------
+        public static int Insert(UserProfile profile)
+        {
 
+            DBservices dbs = new DBservices();
+            return dbs.InsertUserToDB(profile);
+        }
 
+        //--------------------------------------------------------------------------------------------------
+        // # UPDATE USER PROFILE                          
+        //--------------------------------------------------------------------------------------------------
 
+        public static int UpdateUserProfile(UserProfile profile)
+        {
+            DBservices dbs = new DBservices();
+            return dbs.UpdateUserToDB(profile);
 
+        }
 
+        //--------------------------------------------------------------------------------------------------
+        // # DELETE USER PROFILE                             
+        //--------------------------------------------------------------------------------------------------
+        public static int DeleteUserProfile(int id)
+        {
+            DBservices dbs = new DBservices();
+            return dbs.DeleteUserProfile(id);
+        }
+        
 
 
     }

@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using System;
-using System.Security.Claims;
+using System.Collections;
+
+
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,38 +17,75 @@ namespace AirBnb_Part_2.Controllers
     {
         // GET: api/<UserController>
         [HttpGet("Get All Users")]
-        public List<User> Get()
+        public List<UserProfile> Get()
         {
 
-            return User.Read();
+            return UserProfile.Read();
          
         }
 
         // GET api/<UserController>/5
         [HttpGet("Get User By {id}")]
-        public IEnumerable<string> Get(int id)
+        public UserProfile Get(int id)
         {
-            return Ok();
+            List<UserProfile> U = UserProfile.Read();
+            foreach (var item in U)
+            {
+                if (item.UserId == id)
+                {
+                    return item;
+                }
+
+            }
+            return null;
+
         }
 
         // POST api/<UserController>
         [HttpPost("Insert User")]
-        public void Post([FromBody] string value)
+        public int Post([FromBody] UserProfile profile)
         {
+           return UserProfile.Insert(profile);
+
         }
 
         // PUT api/<UserController>/5
         [HttpPut("Update User By {id}")]
-        public void Put(int id, [FromBody] User user)
+        public IActionResult Put(int id, [FromBody] UserProfile user)
         {
+                        
+               user.UserId= id;
+                int temp = UserProfile.UpdateUserProfile(user);
+                if (temp != 0)
+                {
+                    return Ok();
+                }
+                else
 
-
+                {
+                    return NotFound("id " + id.ToString() + " was not update");
+                }
+      
         }
 
         // DELETE api/<UserController>/5
         [HttpDelete("Delete User By{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+           
+            int temp = UserProfile.DeleteUserProfile(id);
+            if (temp > 0)
+            {
+                return Ok();
+            }
+            else
+
+            {
+                return NotFound("id " + id.ToString() + " was not found");
+            }
+
+
+
         }
     }
 }
