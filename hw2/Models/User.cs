@@ -56,7 +56,7 @@ namespace AirBnb_Part_2.Models
         //--------------------------------------------------------------------------------------------------
         // # FIND USER PROFILE                             
         //--------------------------------------------------------------------------------------------------
-        public int GetAccess(string email, string password)
+        public UserProfile GetAccess(string email, string password)
         {
             DBservices dbs = new DBservices();
 

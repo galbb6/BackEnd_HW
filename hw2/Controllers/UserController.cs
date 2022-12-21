@@ -26,20 +26,12 @@ namespace AirBnb_Part_2.Controllers
 
         // GET api/<UserController>/5
         [HttpGet("Get User/email/{email}/password/{password}")]
-        public bool GetUser(string email, string password)
+        public UserProfile GetUser(string email, string password)
         {
 
             UserProfile user = new UserProfile();
-            int temp = user.GetAccess(email,password);
-            if (temp > 0)
-            {
-                return true;
-            }
-            else
-
-            {
-                return false;
-            }
+            return user.GetAccess(email,password);
+ 
 
         }
 

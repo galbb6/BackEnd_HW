@@ -57,10 +57,10 @@
           Id: idVac,
         };
 
-        // if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-        //   apiVacations = "https://localhost:7001/api/Vication";
-        // } else {
-        //   apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+          apiVacations = "https://localhost:7001/api/Vication";
+        } else {
+          apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
 
         // }
         apiFlat = "https://localhost:7001/api/Flat/Get All Flats";
@@ -83,7 +83,7 @@
 
       //reder all the vacations in the list
       function GetAllVication() {
-        apiVacations = "https://localhost:7001/api/Vication";
+        apiVacations = "https://localhost:7001/api/Vication/getAllVications";
         ajaxCall("GET", apiVacations, "", GetAllVacsSCB, GetAllVacsECB);
       }
 
@@ -123,8 +123,10 @@
       //back to the flats page
       function backToFlats() {
         window.location.replace("flat.html");
-      }
+      };
+    }
     </script>
+
   </head>
   <body>
     <div id="containerV" class="row col-12">
@@ -218,3 +220,4 @@
     </div>
   </body>
 </html>
+      
