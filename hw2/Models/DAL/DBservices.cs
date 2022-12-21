@@ -6,6 +6,12 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Text;
 using AirBnb_Part_2.Models;
+using MySql.Data.MySqlClient;
+using Microsoft.AspNetCore.Http;
+using System.Reflection.PortableExecutable;
+using Microsoft.TeamFoundation.Build.WebApi;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -67,17 +73,84 @@ public class DBservices
         return cmd;
     }
 
+
+
+
+
+
     //--------------------------------------------------------------------------------------------------
     //                                 **********FLATS*************
     //--------------------------------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------------------------------
+    // # GET ALL FLATS                               
+    //--------------------------------------------------------------------------------------------------
+    public List<Flat> getFlatsFromDB()
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        List<Flat> list_flat = new List<Flat>();
+        cmd = CreateCommandWithStoredProcedureGetAllFlats("spGetAllFlats", con);
+        
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            while (dataReader.Read())
+            {
+                Flat f = new Flat();
+                f.FlatId = Convert.ToInt32(dataReader["FlatId"]);
+                f.City = dataReader["city"].ToString();
+                f.Address = dataReader["address"].ToString();
+                f.Price = Convert.ToDouble(dataReader["price"]);
+                f.NumOfRooms = Convert.ToInt32(dataReader["rooms"]);
+                list_flat.Add(f);
+            }
+
+
+              
+        }       
+        catch(Exception ex) { throw (ex); }
+        finally { con.Close(); }
+        return list_flat;
+    }
+
+    // Create the SqlCommand using a stored procedure to Get All Flats
+    private SqlCommand CreateCommandWithStoredProcedureGetAllFlats(String spName, SqlConnection con)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+
+
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
     // # INSERT FLAT                               
     //--------------------------------------------------------------------------------------------------
 
-    //--------------------------------------------------
     // This method inserts a Flat to the Flats table 
-    //--------------------------------------------------
     public int InsertFlatToDB(Flat flat)
     {
 
@@ -119,10 +192,7 @@ public class DBservices
         }
 
     }
-
-    //----------------------------------------------------------------
     // Create the SqlCommand using a stored procedure to Update Flat
-    //----------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureInsertFlat(String spName, SqlConnection con, Flat flat)
     {
 
@@ -151,30 +221,11 @@ public class DBservices
         return cmd;
     }
 
-    //----------------------------------------
-    // Build the Insert Flat command String
-    //----------------------------------------
-    private String BuildInsertCommand(Flat flat)
-    {
-        String command;
-
-        StringBuilder sb = new StringBuilder();
-        // use a string builder to create the dynamic string
-        sb.AppendFormat("Values('{0}', '{1}', {2}, {3})", flat.City, flat.Address, flat.Price, flat.NumOfRooms);
-        String prefix = "INSERT INTO Flats_2022 " + "([city],[address],[price],[rooms]) ";
-        command = prefix + sb.ToString();
-
-        return command;
-    }
-    
-
     //--------------------------------------------------------------------------------------------------
     // # UPDATE FLAT                               
     //--------------------------------------------------------------------------------------------------
 
-    //--------------------------------------------------
     // This method update a Flat to the Flats table 
-    //--------------------------------------------------
     public int UpdateFlatToDB(Flat flat)
     {
 
@@ -216,9 +267,7 @@ public class DBservices
         }
 
     }
-    //----------------------------------------------------------------
     // Create the SqlCommand using a stored procedure to Update Flat
-    //----------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureUpdateFlat(String spName, SqlConnection con, Flat flat)
     {
 
@@ -232,7 +281,7 @@ public class DBservices
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
 
-        cmd.Parameters.AddWithValue("@id", flat.Id);
+        cmd.Parameters.AddWithValue("@FlatId", flat.FlatId);
 
         cmd.Parameters.AddWithValue("@city", flat.City);
 
@@ -249,20 +298,8 @@ public class DBservices
     }
 
     //--------------------------------------------------------------------------------------------------
-    // # GET FLAT                               
-    //--------------------------------------------------------------------------------------------------
-
-
-
-
-    //--------------------------------------------------------------------------------------------------
     // # DELETE FLAT                               
     //--------------------------------------------------------------------------------------------------
-
-    //---------------------------------------
-    // TODO Build the Flat Delete  method
-    // DeleteFlight(int id)
-    //---------------------------------------
     public int DeleteFlatFromDB(int id)
     {
 
@@ -305,9 +342,7 @@ public class DBservices
 
     }
 
-    //-------------------------------------------------
     // Create the SqlCommand using a stored procedure
-    //-------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureDeleteFlat(String spName, SqlConnection con, int id)
     {
 
@@ -323,13 +358,10 @@ public class DBservices
 
         cmd.Parameters.AddWithValue("@id", id);
 
-
-
-
-
-
         return cmd;
     }
+
+
 
 
 
@@ -341,10 +373,8 @@ public class DBservices
     // # INSERT VACATION                               
     //--------------------------------------------------------------------------------------------------
 
-    //---------------------------------------------------------
-    // This method inserts a Vacation to the Vacations table 
-    //---------------------------------------------------------
-    public int InsertVacation(Vication vacation)
+    // This method inserts a vacation to the vacations table 
+    public int InsertVacationToDB(Vacation vacation)
     {
 
         SqlConnection con;
@@ -360,9 +390,9 @@ public class DBservices
             throw (ex);
         }
 
-        String cStr = BuildInsertCommand(vacation);      // helper method to build the insert string
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
 
-        cmd = CreateCommand(cStr, con);             // create the command
+        cmd = CreateCommandWithStoredProcedureInsertVacation("spInsertVacation", con, vacation);             // create the command
 
         try
         {
@@ -386,53 +416,599 @@ public class DBservices
 
     }
 
-    //----------------------------------------
-    // Build the Insert Vacation command String
-    //----------------------------------------
-    private String BuildInsertCommand(Vication vacation)
+    // Create the SqlCommand using a stored procedure to Update Vacation
+    private SqlCommand CreateCommandWithStoredProcedureInsertVacation(String spName, SqlConnection con, Vacation vacation)
     {
-        String command;
 
-        StringBuilder sb = new StringBuilder();
-        // use a string builder to create the dynamic string
-        sb.AppendFormat("Values({0}, {1}, '{2}', '{3}')", vacation.UserId, vacation.FlatId, vacation.StartDate, vacation.EndDate);
-        String prefix = "INSERT INTO Vacations_2022 " + "([UserId],[FlatId],[StartDate],[EndDate]) ";
-        command = prefix + sb.ToString();
+        SqlCommand cmd = new SqlCommand(); // create the command object
 
-        return command;
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+        cmd.Parameters.AddWithValue("@EndDate", vacation.EndDate);
+
+        cmd.Parameters.AddWithValue("@StartDate", vacation.StartDate);
+
+        cmd.Parameters.AddWithValue("@UserId", vacation.UserId);
+
+        cmd.Parameters.AddWithValue("@FlatId", vacation.FlatId);
+
+
+
+
+        return cmd;
     }
-
 
     //--------------------------------------------------------------------------------------------------
     // # UPDATE VACATION                               
     //--------------------------------------------------------------------------------------------------
+         public int UpdateVacationToDB(Vacation vacation)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureUpdateVacation("spUpdateVacation", con, vacation);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    // Create the SqlCommand using a stored procedure to UPDATE VACATION  
+    private SqlCommand CreateCommandWithStoredProcedureUpdateVacation(String spName, SqlConnection con, Vacation vacation)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@id", vacation.id);
+
+        cmd.Parameters.AddWithValue("@EndDate", vacation.EndDate);
+
+        cmd.Parameters.AddWithValue("@StartDate", vacation.StartDate);
+
+        cmd.Parameters.AddWithValue("@UserId", vacation.UserId);
+
+        cmd.Parameters.AddWithValue("@FlatId", vacation.FlatId);
 
 
+
+
+        return cmd;
+    }
     //--------------------------------------------------------------------------------------------------
-    // # GET VACATION                               
+    // # GET ALL VACATIONS                              
     //--------------------------------------------------------------------------------------------------
+    public List<Vacation> getVacationFromDB()
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        List<Vacation> list_vacations = new List<Vacation>();
+        cmd = CreateCommandWithStoredProcedureGetAllvacations("spGetAllVacations", con);
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            while (dataReader.Read())
+            {
+                Vacation v = new Vacation();
+                v.id = Convert.ToInt32(dataReader["id"]);
+                v.UserId = Convert.ToInt32(dataReader["UserId"]);
+                v.FlatId = Convert.ToInt32(dataReader["FlatId"]);
+                v.StartDate = Convert.ToDateTime(dataReader["StartDate"]);
+                v.EndDate = Convert.ToDateTime(dataReader["EndDate"]);
+                list_vacations.Add(v);
+            }
+
+
+
+        }
+        catch (Exception ex) { throw (ex); }
+        finally { con.Close(); }
+        return list_vacations;
+    }
+
+  
+    // Create the SqlCommand using a stored procedure to GET ALL VACATIONS   
+
+    private SqlCommand CreateCommandWithStoredProcedureGetAllvacations(String spName, SqlConnection con)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+
+
+        return cmd;
+    }
 
 
     //--------------------------------------------------------------------------------------------------
     // # DELETE VACATION                               
     //--------------------------------------------------------------------------------------------------
 
+    public int DeleteVacationFromDB(int id)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureDeleteVacation("spDeleteVacation", con, id);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+
+    private SqlCommand CreateCommandWithStoredProcedureDeleteVacation(String spName, SqlConnection con, int id)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@id", id);
+
+        return cmd;
+    }
 
 
 
 
 
+    //--------------------------------------------------------------------------------------------------
+    //                                 **********USERS*************
+    //--------------------------------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------------------------------
+    // # GET ALL USERS                               
+    //--------------------------------------------------------------------------------------------------
+
+
+    public List<UserProfile> getUserFromDB()
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+       
+        List<UserProfile> list_users = new List<UserProfile>();
+        cmd = CreateCommandWithStoredProcedureGetAllUsers("spGetAllUsers", con);
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            while (dataReader.Read())
+            {
+                UserProfile u = new UserProfile();
+                u.UserId = Convert.ToInt32(dataReader["UserId"]);
+                u.UserPassword = Convert.ToString(dataReader["UserPassword"]);
+               u.familyName = Convert.ToString(dataReader["familyName"]);
+                u.firstName = Convert.ToString(dataReader["firstName"]);
+                u.email = Convert.ToString(dataReader["email"]);
+                list_users.Add(u);
+            }
+
+
+
+        }
+        catch (Exception ex) { throw (ex); }
+        finally { con.Close(); }
+        return list_users;
+    }
+
+
+    // Create the SqlCommand using a stored procedure to GET ALL USERS   
+
+    private SqlCommand CreateCommandWithStoredProcedureGetAllUsers(String spName, SqlConnection con)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        return cmd;
+    }
+
+
+
+    //--------------------------------------------------------------------------------------------------
+    // # INSERT USER TO DB                              
+    //--------------------------------------------------------------------------------------------------
+
+    public int InsertUserToDB(UserProfile profile)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureInsertUser("spInsertUser", con, profile);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+    // Create the SqlCommand using a stored procedure to Insert User Profile
+    private SqlCommand CreateCommandWithStoredProcedureInsertUser(String spName, SqlConnection con, UserProfile profile)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+
+        cmd.Parameters.AddWithValue("@firstName", profile.firstName);
+
+        cmd.Parameters.AddWithValue("@familyName", profile.familyName);
+
+        cmd.Parameters.AddWithValue("@email", profile.email);
+
+        cmd.Parameters.AddWithValue("@UserPassword", profile.UserPassword);
 
 
 
 
+        return cmd;
+    }
+
+
+
+    //--------------------------------------------------------------------------------------------------
+    // # Update USER IN DB                              
+    //--------------------------------------------------------------------------------------------------
+    public int UpdateUserToDB(UserProfile profile)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureUpdateUser("spUpdateUser", con, profile);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    // Create the SqlCommand using a stored procedure to UPDATE VACATION  
+    private SqlCommand CreateCommandWithStoredProcedureUpdateUser(String spName, SqlConnection con, UserProfile profile)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@Userid", profile.UserId);
+
+        cmd.Parameters.AddWithValue("@firstName", profile.firstName);
+
+        cmd.Parameters.AddWithValue("@familyName", profile.familyName);
+
+        cmd.Parameters.AddWithValue("@email", profile.email);
+
+        cmd.Parameters.AddWithValue("@UserPassword", profile.UserPassword);
 
 
 
 
+        return cmd;
+    }
+    //--------------------------------------------------------------------------------------------------
+    // # DELETE USER From DB                              
+    //--------------------------------------------------------------------------------------------------
+
+    
+
+   public int DeleteUserProfile(string email)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureDeleteUser("spDeleteUser", con, email);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
 
 
+    private SqlCommand CreateCommandWithStoredProcedureDeleteUser(String spName, SqlConnection con, string email)
+    {
 
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@email", email);
+
+        return cmd;
+    }
+
+
+    //--------------------------------------------------------------------------------------------------
+    // # DELETE USER From DB                              
+    //--------------------------------------------------------------------------------------------------
+
+    public int GetAccessFromDB(string email, string password)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+
+        cmd = CreateCommandWithStoredProcedureGetAccess("spGetUserAccess", con, email,password);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+
+    private SqlCommand CreateCommandWithStoredProcedureGetAccess(String spName, SqlConnection con, string email, string password)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@email", email);
+        cmd.Parameters.AddWithValue("@password", password);
+
+        return cmd;
+    }
 
 
 }

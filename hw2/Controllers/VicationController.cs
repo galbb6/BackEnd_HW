@@ -11,33 +11,43 @@ namespace AirBnb_Part_2.Controllers
     [ApiController]
     public class VicationController : ControllerBase
     {
-        // GET: api/<VixationController>
-        [HttpGet]
-        public List<Vication> Get()
-        {
-            return Vication.Read();
-        }
+        //--------------------------------------------------------------------------------------------------
+        // # GET ALL VACATION                               
+        //--------------------------------------------------------------------------------------------------
 
-        // GET api/<VixationController>/5
-        [HttpGet("{id}")]
-        public bool Get(int id)
+        // GET: api/<VixationController>
+        [HttpGet("getAllVications")]
+        public List<Vacation> Get()
         {
-            List<Vication> V = Vication.Read();
+            return Vacation.Read();
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # GET VACATION  BY ID                             
+        //--------------------------------------------------------------------------------------------------
+        // GET api/<VixationController>/5
+
+        [HttpGet("GetVacationByID/id/{id}")]
+        public Vacation Get(int id)
+        {
+
+            List<Vacation> V = Vacation.Read();
             foreach (var item in V)
             {
-                if (item.Id == id)
+                if (item.id == id)
                 {
-                    return true;
+                    return item;
                 }
 
             }
-            return false;
+            return null;
         }
-
+        //--------------------------------------------------------------------------------------------------
+        // # GET VACATION BY DATES                               
+        //--------------------------------------------------------------------------------------------------
         [HttpGet("getByDates/startDate/{startDate}/endDate/{endDate}")]
-        public List<Vication> getByDates(DateTime startDate, DateTime endDate)
+        public List<Vacation> getByDates(DateTime startDate, DateTime endDate)
         {
-            List<Vication> VList = Vication.getByDatesOrders(startDate, endDate);
+            List<Vacation> VList = Vacation.getByDatesOrders(startDate, endDate);
             
                 if (VList.Count>=0)
                 {
@@ -48,23 +58,61 @@ namespace AirBnb_Part_2.Controllers
             
             return null;
         }
+
+        //--------------------------------------------------------------------------------------------------
+        // # INSERT VACATION                               
+        //--------------------------------------------------------------------------------------------------
         // POST api/<VixationController>
-        [HttpPost]
-        public bool Post([FromBody] Vication V)
+        [HttpPost("Insert Vacation")]
+        public int Post([FromBody] Vacation V)
         {
-            return V.Insert();
+            return V.Insert(V);
         }
+
+        //--------------------------------------------------------------------------------------------------
+        // # UPDATE VACATION                               
+        //--------------------------------------------------------------------------------------------------
 
         // PUT api/<VixationController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("Update Vication")]
+        public IActionResult Put(int id, [FromBody] Vacation vacation)
         {
-        }
+            vacation.id = id;
+            int temp = vacation.UpdateVacation(vacation);
+            if (temp > 0)
+            {
+                return Ok();
+            }
+            else
 
+            {
+                return NotFound("id " + id.ToString() + " was not update");
+            }
+
+
+
+
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # DELETE VACATION                               
+        //--------------------------------------------------------------------------------------------------
         // DELETE api/<VixationController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("Delete Vacation By{id}")]
+        public IActionResult Delete(int id)
         {
+            Vacation v = new Vacation();
+            int temp = v.DeleteVacation(id);
+            if (temp > 0)
+            {
+                return Ok();
+            }
+            else
+
+            {
+                return NotFound("id " + id.ToString() + " was not found");
+            }
+
+
         }
        
 

@@ -13,7 +13,7 @@ namespace AirBnb_Part_2.Controllers
         // # GET FLATS                                
         //--------------------------------------------------------------------------------------------------
         // GET: api/<FlatController>
-        [HttpGet]
+        [HttpGet("Get All Flats")]
         public List<Flat> Get()
         {
             return Flat.Read();
@@ -21,27 +21,27 @@ namespace AirBnb_Part_2.Controllers
 
 
         //--------------------------------------------------------------------------------------------------
-        // # GET TRUE IF WHERE FLAT WITH THIS ID                               
+        // # GET flat by ID IF NOT FOUND RETURN NULL                              
         //--------------------------------------------------------------------------------------------------
         // GET api/<FlatController>/5
-        [HttpGet("{id}")]
-        public bool Get(int id)
+        [HttpGet("Get Flat By {id}")]
+        public Flat Get(int id)
         {
              List< Flat > F = Flat.Read();
             foreach (var item in F)
             {
-                if (item.Id == id)
+                if (item.FlatId == id)
                 {
-                    return true;
+                    return item;
                 }
             }
-            return false;
+            return null;
         }
 
         //--------------------------------------------------------------------------------------------------
         // # GET ALL FLATS WHERE CITY == CITY AND PRICE <= PRICE                                    
         //--------------------------------------------------------------------------------------------------
-        [HttpGet("city/price")]
+        [HttpGet("Get Flats BY {City,Price}")]
         public  List<Flat> GetByCityAndPrice(string city, double price)
         {
             List<Flat> FList =Flat.getCityPrice(city,price);
@@ -59,7 +59,7 @@ namespace AirBnb_Part_2.Controllers
         //--------------------------------------------------------------------------------------------------
 
         // POST api/<FlatController>
-        [HttpPost]
+        [HttpPost("Insert Flat")]
         public IActionResult Post([FromBody] Flat flat)
         {
             int temp = flat.InsertFlat(flat);
@@ -79,10 +79,10 @@ namespace AirBnb_Part_2.Controllers
         //--------------------------------------------------------------------------------------------------
 
         // PUT api/<FlatController>/5
-        [HttpPut("{id}")]
+        [HttpPut("Update Flat")]
         public IActionResult Put(int id, [FromBody] Flat flat)
         {
-            flat.Id = id;
+            flat.FlatId = id;
             int temp = flat.UpdateFlat(flat);
             if (temp > 0)
             {
@@ -100,11 +100,11 @@ namespace AirBnb_Part_2.Controllers
         // # DELETE FLAT                            
         //--------------------------------------------------------------------------------------------------
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("Delete Flat/flatId/{flatId}")]
+        public IActionResult Delete(int flatId)
         {
             Flat f = new Flat();
-            int temp = f.DeleteFlat(id);
+            int temp = f.DeleteFlat(flatId);
             if (temp > 0)
             {
                 return Ok();
@@ -112,11 +112,9 @@ namespace AirBnb_Part_2.Controllers
             else
 
             {
-                return NotFound("id "+id.ToString()+" was not found");
+                return NotFound("id "+ flatId.ToString()+" was not found");
             }
         }
-
-
 
     }
 }

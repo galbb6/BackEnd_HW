@@ -1,36 +1,41 @@
 ﻿namespace AirBnb_Part_2.Models
 {
-    public class Vication
+    public class Vacation
     {
 
        
-        public int Id { get; set; }
+        public int id { get; set; }
         public int UserId { get; set; }
         public int FlatId { get; set; }
         public DateTime StartDate { get ; set; }
         public DateTime EndDate { get; set; }
 
-        private static List<Vication> OrderesList = new List<Vication>();
+        private static List<Vacation> OrderesList = new List<Vacation>();
 
-  
-        public  bool Insert( )
+        //--------------------------------------------------------------------------------------------------
+        // # INSERT VACATION                               
+        //--------------------------------------------------------------------------------------------------
+        public int Insert(Vacation v)
         {
           try
             {
-            foreach (Vication item in OrderesList)
+            foreach (Vacation item in OrderesList)
             {
-                if (item.Id == this.Id )
+                if (item.id == this.id )
                 {
-                    return false;
+                    return 0;
 
                 }
                 else if (this.CheckVicationDates())
                 {
-                        return false;
+                        return 0;
                 }               
             }
-                OrderesList.Add(this);
-                InsertVacationToDB(this);
+
+                DBservices dbs = new DBservices();
+
+                return dbs.InsertVacationToDB(v);
+               
 
             }
             catch (Exception exp)
@@ -39,14 +44,20 @@
                 throw new Exception(" didn't succeed in inserting Flat " + exp.Message);
             }
 
-            return true;
+         
 
         }
-
-        public static List<Vication> getByDatesOrders(DateTime startDate, DateTime endDate)
+        //--------------------------------------------------------------------------------------------------
+        // # GET VACATION  BY DATES                            
+        //--------------------------------------------------------------------------------------------------
+        public static List<Vacation> getByDatesOrders(DateTime startDate, DateTime endDate)
         {
-            List<Vication> tempList = new List<Vication>();
-            foreach (Vication item in OrderesList)
+            List<Vacation> tempList = new List<Vacation>();
+
+            DBservices dbs = new DBservices();
+            OrderesList = dbs.getVacationFromDB();
+
+            foreach (Vacation item in OrderesList)
             {
                 if (item.StartDate>= startDate && item.EndDate<=endDate)
                 {
@@ -56,18 +67,44 @@
 
             return tempList ;
         }
-
-        public static  List<Vication> Read()
+        //--------------------------------------------------------------------------------------------------
+        // # GET ALL VACATIONS                               
+        //--------------------------------------------------------------------------------------------------
+        public static  List<Vacation> Read()
         {
+            DBservices dbs = new DBservices();
+            OrderesList = dbs.getVacationFromDB();
             return OrderesList;
 
-        }
 
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # UPDATE VACATION                             
+        //--------------------------------------------------------------------------------------------------
+        public int UpdateVacation(Vacation vacation)
+        {
+
+            DBservices dbs = new DBservices();
+            return dbs.UpdateVacationToDB(vacation);
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # DELETE VACATION                             
+        //--------------------------------------------------------------------------------------------------
+        public int DeleteVacation(int id)
+        {
+            DBservices dbs = new DBservices();
+            return dbs.DeleteVacationFromDB(id);
+
+
+        }
+        //--------------------------------------------------------------------------------------------------
+        // # CHECK VACATION VALIDATION BY DATES <HELPER>                              
+        //--------------------------------------------------------------------------------------------------
         public bool CheckVicationDates()
         {
             // הפונקציה מקבלת חופשה מסויימת ובודקת האם אפשר לסגור אותה מבחינת תאריכים
             // הפונקציה תחזיר אמת במידה והדירה כבר קיימת בתאריכים אלו
-            foreach (Vication item in OrderesList)
+            foreach (Vacation item in OrderesList)
             {
                 if (item.FlatId == this.FlatId)
                 {
@@ -89,12 +126,6 @@
                   return false;
         }
 
-        public int InsertVacationToDB(Vication v)
-        {
-            DBservices dbs = new DBservices();
-
-            return dbs.InsertVacation(v);
-        }
-
+      
     }
 }
