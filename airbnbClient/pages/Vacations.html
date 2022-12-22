@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.1.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
+    <script src="../js/ajaxcall.js"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+    />
+    <title>Vacations</title>
+    <script>
+      var StartDate;
+      var EndDate;
+
+      $(document).ready(function () {
+        $("#newFormVac").submit(function () {
+          AddVication();
+          return false;
+        });
+      });
+
+      //add a new vacation
+
+      function AddVication() {
+        var flatId = sessionStorage.getItem("FlatId");
+        var userId = $("#userId").val();
+        var idVac = $("#vacID").val();
+
+        var vication = {
+          StartDate: StartDate,
+          EndDate: EndDate,
+          UserId: userId,
+          FlatId: flatId,
+          Id: idVac,
+        };
+
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+          apiVacations = "https://localhost:7001/api/Vication";
+        } else {
+          apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
+
+        // }
+        apiFlat = "https://localhost:7001/api/Flat/Get All Flats";
+        ajaxCall(
+          "POST",
+          apiVacations,
+          JSON.stringify(vication),
+          addVacSCB,
+          addVacECB
+        );
+      }
+      //succeed to add vacation
+      function addVacSCB(data) {
+        $("#userId").val(""), $("#vacID").val("");
+      }
+      //not succeed to add vacation
+      function addVacECB(error) {
+        alert("error");
+      }
+
+      //reder all the vacations in the list
+      function GetAllVication() {
+        apiVacations = "https://localhost:7001/api/Vication/getAllVications";
+        ajaxCall("GET", apiVacations, "", GetAllVacsSCB, GetAllVacsECB);
+      }
+
+      //succeed to get the vacations
+      function GetAllVacsSCB(data) {
+        if (data.lenght == 0) {
+          var str =
+            "We dont have vacations to show you right now. You can be the first to upload new vacation ! ";
+          document.getElementById("renderVacsDiv").innerHTML = str;
+        } else {
+          document.getElementById("renderVacsDiv").innerHTML = "";
+          for (let index = 0; index < data.length; index++) {
+            var rendVac = "";
+
+            rendVac += '<div class="card col-4">';
+            rendVac += "<strong>Vacation id :" + data[index].id + " </strong> ";
+            rendVac +=
+              '<p class="text-card"> Flat id :' + data[index].flatId + " </p>";
+            rendVac +=
+              '<p class="text-card"> User id :' + data[index].userId + " </p>";
+            rendVac +=
+              '<p class="text-card"> Start day :' +
+              data[index].startDate +
+              " </p>";
+            rendVac +=
+              '<p class="text-card"> End day :' + data[index].endDate + " </p>";
+
+            rendVac += "</div>";
+            document.getElementById("renderVacsDiv").innerHTML += rendVac;
+          }
+        }
+      }
+      //not succeed to get the vacations
+      function GetAllVacsECB(error) {
+        alert("error");
+      }
+      //back to the flats page
+      function backToFlats() {
+        window.location.replace("flat.html");
+      };
+    }
+    </script>
+
+  </head>
+  <body>
+    <div id="containerV" class="row col-12">
+      <h1>Vacations</h1>
+      <h3>Enter a new Vication</h3>
+      <form id="newFormVac">
+        <br />
+        <table>
+          <tr>
+            <td>
+              <span> Vacation Id :</span>
+            </td>
+            <td>
+              <input
+                type="number"
+                id="vacID"
+                placeholder="vacation id"
+                required
+                max="10000"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><br /><span> User Id :</span></td>
+            <td>
+              <br />
+              <input
+                type="number"
+                id="userId"
+                placeholder="User id"
+                required
+                max="1000"
+              />
+            </td>
+            <br />
+          </tr>
+          <tr>
+            <td><br /><span> Dates :</span></td>
+            <td>
+              <br /><input
+                type="text"
+                id="fontDate"
+                class="form-control"
+                name="daterange"
+                required
+                value="daterange"
+              />
+            </td>
+          </tr>
+        </table>
+
+        <br />
+        <br />
+
+        
+        <input type="submit" id="btnAddVac" value="add new vacation" />
+        <input
+          type="button"
+          id="btnBackToFlats"
+          value="Back to flats"
+          onclick="backToFlats()"
+        /><br /><br />
+      </form>
+      <script>
+        $(function () {
+            $('input[name="daterange"]').daterangepicker(
+              {
+                opens: "left",
+                maxSpan: {
+                  days: 10,
+                },
+              },
+              function (start, end, label) {
+                StartDate = start._d;
+                EndDate = end._d;
+              }
+            );
+          });
+      </script>
+      <h3>To see all vication Click here</h3>
+      <div id="getAllVacs">
+        <br />
+        <button type="submit" onclick="GetAllVication()">
+          Get All Vacations
+        </button>
+      </div>
+
+      <div id="cardsDivVac" class="row">
+        <div id="renderVacsDiv"></div>
+      </div>
+    </div>
+  </body>
+</html>
+      
