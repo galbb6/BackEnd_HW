@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.1.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
+    <script src="../js/ajaxcall.js"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script src="Vacations.html"></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Flats</title>
+    <script>
+      //--------------------------------------------------------------------------------------------------
+      // # LOADING FLATS FROM DB & SUBMIT FUNCTIONS
+      //--------------------------------------------------------------------------------------------------
+
+      $(document).ready(function () {
+        GetAllFlats();
+        if (
+          sessionStorage.getItem("Login") == null ||
+          sessionStorage.getItem("Login") == undefined
+        ) {
+          sessionStorage.setItem("Login", false);
+        }
+        navbarSelect();
+        $("#newFormFlat").submit(function () {
+          PostNewFlat();
+          return false;
+        });
+        $("#loginModal").submit(function () {
+          if (sessionStorage.getItem("UserNextStep") == "Edit") {
+            EditToDB();
+          } else if (sessionStorage.getItem("UserNextStep") == "SingIn") {
+            SingInToDB();
+          } else if (sessionStorage.getItem("UserNextStep") == "SingUp") {
+            SingUpToDB();
+          } else {
+            UpdateFlatToDB();
+          }
+          return false;
+        });
+      });
+      //--------------------------------------------------------------------------------------------------
+      //                                    FLATS FUNCTIONS
+      //--------------------------------------------------------------------------------------------------
+      //--------------------------------------------------------------------------------------------------
+      // # GET FLATS
+      //--------------------------------------------------------------------------------------------------
+      function GetAllFlats() {
+        // if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+        //   apiFlat = "https://localhost:7001/api/Flat/Get All Flats";
+        // } else {
+        //   apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
+
+        // }
+        apiFlat = "https://localhost:7001/api/Flat/Get All Flats";
+
+        ajaxCall("GET", apiFlat, "", GetAllFlatsSCB, GetAllFlatsECB);
+      }
+      //succeed to render the flats
+      function GetAllFlatsSCB(data) {
+        if (data.lenght == 0) {
+          var str =
+            "We dont have flats to show you right now. You can be the first to upload new flat ! ";
+          document.getElementById("renderFlatsDiv").innerHTML = str;
+        } else {
+          document.getElementById("renderFlatsDiv").innerHTML = "";
+          for (let index = 0; index < data.length; index++) {
+            var rendFlat = "";
+
+            rendFlat += '<div class="card col-4">';
+            rendFlat +=
+              "<strong>Flat id : " + data[index].flatId + " </strong> ";
+            rendFlat +=
+              '<p class="text-card"> City : ' + data[index].city + " </p>";
+            rendFlat +=
+              '<p class="text-card"> Address : ' +
+              data[index].address +
+              " </p>";
+            rendFlat +=
+              '<p class="text-card"> Price : ' + data[index].price + " $</p>";
+            rendFlat +=
+              '<p class="text-card"> Rooms : ' +
+              data[index].numOfRooms +
+              " </p>";
+            rendFlat +=
+              '<br><div class="btnOrderFlat"><input type="button" value="Order" onclick="OrderFlat(' +
+              data[index].flatId +
+              ')"></div>';
+            rendFlat +=
+              '<br><div class="btnOrderFlat"><input type="button" value="Update" data-toggle="modal" data-target="#modalLoginForm" onclick="UpdateFlat(' +
+              data[index].flatId +
+              ')"></div>';
+            rendFlat +=
+              '<br><div class="btnDeleteFlat"><input type="button" value="Delete" onclick="DeleteFlat(' +
+              data[index].flatId +
+              ')"></div>';
+            rendFlat += "</div>";
+            document.getElementById("renderFlatsDiv").innerHTML += rendFlat;
+          }
+        }
+      }
+      //not succeed to render the flats
+      function GetAllFlatsECB(error) {
+        alert("ERROR - we didnt get the flats");
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      // # INSERT FLAT
+      //--------------------------------------------------------------------------------------------------
+
+      function PostNewFlat() {
+        var id = $("#flatId").val();
+        var city = $("#flatCity").val();
+        var address = $("#flatAddress").val();
+        var price = $("#flatPrice").val();
+        var roomNum = $("#flatRooms").val();
+
+        var flat = {
+          Id: id,
+          City: city,
+          Address: address,
+          Price: price,
+          NumOfRooms: roomNum,
+        };
+        apiFlat = "https://localhost:7001/api/Flat/Insert Flat";
+
+        ajaxCall(
+          "POST",
+          apiFlat,
+          JSON.stringify(flat),
+          postNewFlatSCB,
+          postNewFlatECB
+        );
+      }
+      // succeed to add the flat
+      function postNewFlatSCB(data) {
+        $("#flatId").val("");
+        $("#flatCity").val("");
+        $("#flatAddress").val("");
+        $("#flatPrice").val("");
+        $("#flatRooms").val("");
+        GetAllFlats();
+      }
+
+      // not succeed to add the flat
+      function postNewFlatECB(error) {
+        alert("not added");
+
+        window.location.reload();
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      // # UPDATE FLAT
+      //--------------------------------------------------------------------------------------------------
+      //render update flat modal
+      function UpdateFlat(flatId) {
+        sessionStorage.setItem("UserNextStep", "EditFlat");
+        sessionStorage.setItem("flatId", flatId);
+        document.getElementById("renderModal").innerHTML = "";
+        var strEditFlat = "";
+        strEditFlat += '<div class="modal-header text-center">';
+        strEditFlat +=
+          ' <h4 class="modal-title w-100 font-weight-bold">Edit flat ' +
+          flatId +
+          "</h4>";
+        strEditFlat +=
+          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        strEditFlat += '<span aria-hidden="true">&times;</span>';
+        strEditFlat += "</button>";
+        strEditFlat += "</div>";
+        strEditFlat += '<div class="modal-body mx-3">';
+        strEditFlat += '<div class="md-form mb-5">';
+        strEditFlat += '<i class="fas fa-user prefix grey-text"></i>';
+        strEditFlat +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">City</label>';
+        strEditFlat +=
+          '<input type="text" id="orangeForm-city" class="form-control validate" required placeholder="city" onkeydown="return /[a-z]/i.test(event.key)">';
+        strEditFlat += "</div>";
+        strEditFlat += '<div class="md-form mb-5">';
+        strEditFlat += '<i class="fas fa-user prefix grey-text"></i>';
+        strEditFlat +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">Address</label>';
+        strEditFlat +=
+          '<input type="text" id="orangeForm-address" class="form-control validate" required placeholder="address">';
+        strEditFlat += "</div>";
+        strEditFlat += ' <div class="md-form mb-4">';
+        strEditFlat += '<i class="fas fa-lock prefix grey-text"></i>';
+        strEditFlat +=
+          ' <label data-error="wrong" data-success="right" for="defaultForm-pass">Price</label>';
+        strEditFlat +=
+          '<input type="number" id="defaultForm-price" class="form-control validate" required min="1" placeholder="price"/>';
+        strEditFlat += "</div>";
+        strEditFlat += ' <div class="md-form mb-4">';
+        strEditFlat += '<i class="fas fa-lock prefix grey-text"></i>';
+        strEditFlat +=
+          ' <label data-error="wrong" data-success="right" for="defaultForm-pass">Rooms</label>';
+        strEditFlat +=
+          '<input type="number" id="defaultForm-rooms" class="form-control validate" required min="1" max="10" placeholder="number of rooms"/>';
+        strEditFlat += "</div>";
+        strEditFlat += "</div>";
+        strEditFlat +=
+          '<div class="modal-footer d-flex justify-content-center">';
+        strEditFlat += '<button  class="btn btn-default">Edit</button>';
+        strEditFlat += "</div>";
+        strEditFlat += "</div>";
+        strEditFlat += "</div>";
+        strEditFlat += "</div>";
+        document.getElementById("renderModal").innerHTML = strEditFlat;
+      }
+      //update flat to DB
+      function UpdateFlatToDB() {
+        var flatId = sessionStorage.getItem("flatId");
+        var city = $("#orangeForm-city").val();
+        var address = $("#orangeForm-address").val();
+        var price = $("#defaultForm-price").val();
+        var roomNum = $("#defaultForm-rooms").val();
+
+        var flat = {
+          FlatId: flatId,
+          City: city,
+          Address: address,
+          Price: price,
+          NumOfRooms: roomNum,
+        };
+        apiFlat = "https://localhost:7001/api/Flat/Update Flat";
+
+        ajaxCall(
+          "PUT",
+          apiFlat,
+          JSON.stringify(flat),
+          updateFlatSCB,
+          updateFlatECB
+        );
+      }
+      //succeed update flat
+      function updateFlatSCB(data) {
+        alert("flat" + sessionStorage.getItem("flatId") + " update secceed");
+        window.location.reload();
+      }
+      //not succeed update flat
+      function updateFlatECB(error) {
+        alert("update failed");
+        $("#orangeForm-city").val("");
+        $("#orangeForm-address").val("");
+        $("#defaultForm-price").val("");
+        $("#defaultForm-rooms").val("");
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      // # DELETE FLAT
+      //--------------------------------------------------------------------------------------------------
+      //delete flat from DB
+      function DeleteFlat(flatId) {
+        if (confirm("Are you sure you want to delete this flat?")==true) {
+           apiFlat =
+          "https://localhost:7001/api/Flat/Delete Flat/flatId/" +
+          JSON.stringify(flatId) +
+          "";
+
+        ajaxCall(
+          "DELETE",
+          apiFlat,
+          JSON.stringify(flatId),
+          DeleteFlatSCB,
+          DeleteFlatECB
+        );
+        } else{window.location.reload()}
+       
+      }
+      //succeed delete flat
+      function DeleteFlatSCB(data) {
+        alert("we deleted the flat");
+        GetAllFlats();
+      }
+      //not succeed delete flat
+      function DeleteFlatECB(error) {
+        alert("we deleted the flat");
+        GetAllFlats();
+      }
+      //--------------------------------------------------------------------------------------------------
+      // # ORDER FLAT
+      //--------------------------------------------------------------------------------------------------
+      function OrderFlat(flatId) {
+        if (sessionStorage.getItem("Login") == "false") {
+          alert("For order you need to login");
+        } else {
+          sessionStorage.setItem("FlatId", flatId);
+          window.location.replace("Vacations.html");
+        }
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      //                                    USER FUNCTIONS
+      //--------------------------------------------------------------------------------------------------
+      //--------------------------------------------------------------------------------------------------
+      // # SING IN
+      //--------------------------------------------------------------------------------------------------
+      // user sing in modal
+      function userSingIn() {
+        sessionStorage.setItem("UserNextStep", "SingIn");
+        document.getElementById("renderModal").innerHTML = "";
+        var strSingIn = "";
+        strSingIn += '<div class="modal-header text-center">';
+        strSingIn +=
+          ' <h4 class="modal-title w-100 font-weight-bold">Sing in</h4>';
+        strSingIn +=
+          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        strSingIn += '<span aria-hidden="true">&times;</span>';
+        strSingIn += "</button>";
+        strSingIn += "</div>";
+        strSingIn += '<div class="modal-body mx-3">';
+        strSingIn += '<div class="md-form mb-5">';
+        strSingIn += '<i class="fas fa-envelope prefix grey-text"></i>';
+        strSingIn +=
+          '<label data-error="wrong" data-success="right" for="defaultForm-email">email</label>';
+        strSingIn +=
+          '<input type="email" id="defaultForm-email" class="form-control validate" required placeholder="Email@gmail.com"/>';
+        strSingIn += "</div>";
+        strSingIn += ' <div class="md-form mb-4">';
+        strSingIn += '<i class="fas fa-lock prefix grey-text"></i>';
+        strSingIn +=
+          ' <label data-error="wrong" data-success="right" for="defaultForm-pass">password</label>';
+        strSingIn +=
+          '<input type="password" id="defaultForm-pass" class="form-control validate" required minlength="6" placeholder=" * * * * * *"/>';
+        strSingIn += "</div>";
+        strSingIn += "</div>";
+        strSingIn += '<div class="modal-footer d-flex justify-content-center">';
+        strSingIn += '<button class="btn btn-default">Sing in</button>';
+        strSingIn += "</div>";
+        strSingIn += "</div>";
+        strSingIn += "</div>";
+        strSingIn += "</div>";
+        document.getElementById("renderModal").innerHTML = strSingIn;
+      }
+      //get account from DB
+      function SingInToDB() {
+        var Email = $("#defaultForm-email").val();
+        var Pass = $("#defaultForm-pass").val();
+        apiFlat =
+          "https://localhost:7001/api/User/Get User/email/" +
+          Email +
+          "/password/" +
+          Pass +
+          "";
+        ajaxCall("GET", apiFlat, "", getAccessSCB, getAccessECB);
+      }
+      //succeed to get access
+      function getAccessSCB(data) {
+        if (data == undefined || data == null) {
+          alert("Login failed. Sign up or check your email or password");
+          $("#defaultForm-email").val("");
+          $("#defaultForm-pass").val("");
+        } else {
+          alert("Login was successful");
+          sessionStorage.setItem("Login", data.email);
+          window.location.reload();
+        }
+      }
+      //not succeed to get access
+      function getAccessECB(error) {
+        alert("Login failed. Sign up or check your email or password");
+        $("#defaultForm-email").val("");
+        $("#defaultForm-pass").val("");
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      // # SING UP
+      //--------------------------------------------------------------------------------------------------
+      // Sing up modal
+      function userSingUp() {
+        sessionStorage.setItem("UserNextStep", "SingUp");
+        document.getElementById("renderModal").innerHTML = "";
+        var strSingUp = "";
+        strSingUp += '<div class="modal-header text-center">';
+        strSingUp +=
+          ' <h4 class="modal-title w-100 font-weight-bold">Sing up</h4>';
+        strSingUp +=
+          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        strSingUp += '<span aria-hidden="true">&times;</span>';
+        strSingUp += "</button>";
+        strSingUp += "</div>";
+        strSingUp += '<div class="modal-body mx-3">';
+        strSingUp += '<div class="md-form mb-5">';
+        strSingUp += '<i class="fas fa-user prefix grey-text"></i>';
+        strSingUp +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">first name</label>';
+        strSingUp +=
+          '<input type="text" id="orangeForm-name" class="form-control validate" required placeholder="first name" minlength="2" onkeydown="return /[a-z]/i.test(event.key)" >';
+        strSingUp += "</div>";
+        strSingUp += '<div class="md-form mb-5">';
+        strSingUp += '<i class="fas fa-user prefix grey-text"></i>';
+        strSingUp +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">last name</label>';
+        strSingUp +=
+          '<input type="text" id="orangeForm-lastName" class="form-control validate" required placeholder="last name" minlength="2" onkeydown="return /[a-z]/i.test(event.key)">';
+        strSingUp += "</div>";
+        strSingUp += '<div class="md-form mb-5">';
+        strSingUp += '<i class="fas fa-envelope prefix grey-text"></i>';
+        strSingUp +=
+          '<label data-error="wrong" data-success="right" for="defaultForm-email">email</label>';
+        strSingUp +=
+          '<input type="email" id="defaultForm-email" class="form-control validate" required placeholder="Email@gmail.com"/>';
+        strSingUp += "</div>";
+        strSingUp += ' <div class="md-form mb-4">';
+        strSingUp += '<i class="fas fa-lock prefix grey-text"></i>';
+        strSingUp +=
+          ' <label data-error="wrong" data-success="right" for="defaultForm-pass">password</label>';
+        strSingUp +=
+          '<input type="password" id="defaultForm-pass" class="form-control validate" required minlength="6" min="1" placeholder=" * * * * * *"/>';
+        strSingUp += "</div>";
+        strSingUp += "</div>";
+        strSingUp += '<div class="modal-footer d-flex justify-content-center">';
+        strSingUp += '<button class="btn btn-default">Sing up</button>';
+        strSingUp += "</div>";
+        strSingUp += "</div>";
+        strSingUp += "</div>";
+        strSingUp += "</div>";
+        document.getElementById("renderModal").innerHTML = strSingUp;
+      }
+
+      //Singup to DB
+      function SingUpToDB() {
+        var id = $("#flatId").val();
+        var name = $("#orangeForm-name").val();
+        var family = $("#orangeForm-lastName").val();
+        var Email = $("#defaultForm-email").val();
+        var Pass = $("#defaultForm-pass").val();
+
+        var user = {
+          UserId: id,
+          firstName: name,
+          familyName: family,
+          email: Email,
+          UserPassword: Pass,
+        };
+        apiFlat = "https://localhost:7001/api/User/Insert User";
+
+        ajaxCall(
+          "POST",
+          apiFlat,
+          JSON.stringify(user),
+          postNewUserSCB,
+          postNewUserECB
+        );
+      }
+      //succees sing up
+      function postNewUserSCB(data) {
+        alert("Secceed");
+        var userEmail = $("#defaultForm-email").val();
+        sessionStorage.setItem("Login", userEmail);
+        window.location.reload();
+      }
+      //not success sing up
+      function postNewUserECB(error) {
+        alert("not added. this email already exist");
+        $("#orangeForm-name").val("");
+        $("#orangeForm-lastName").val("");
+        $("#defaultForm-email").val("");
+        $("#defaultForm-pass").val("");
+      }
+    
+      //--------------------------------------------------------------------------------------------------
+      // # EDIT USER PROFILE
+      //--------------------------------------------------------------------------------------------------
+      //Edit profile to DB
+      function EditToDB() {
+        sessionStorage.setItem("UserNextStep", "Edit");
+
+        var id = $("#flatId").val();
+        var name = $("#orangeForm-name").val();
+        var family = $("#orangeForm-lastName").val();
+        var Email = sessionStorage.getItem("Login");
+        var Pass = $("#defaultForm-pass").val();
+
+        var user = {
+          UserId: id,
+          firstName: name,
+          familyName: family,
+          email: Email,
+          UserPassword: Pass,
+        };
+        apiFlat = "https://localhost:7001/api/User/Update User";
+
+        ajaxCall(
+          "PUT",
+          apiFlat,
+          JSON.stringify(user),
+          updateUserSCB,
+          updateUserECB
+        );
+      }
+      //succeed edit profile
+      function updateUserSCB(data) {
+        alert("user " + sessionStorage.getItem("Login") + " update secceed");
+        window.location.reload();
+      }
+      //not succeed edit profile
+      function updateUserECB(error) {
+        alert("user update failed");
+        $("#orangeForm-name").val("");
+        $("#orangeForm-lastName").val("");
+        $("#defaultForm-pass").val("");
+      }
+      // edit user profile modal
+      function editProfile() {
+        sessionStorage.setItem("UserNextStep", "Edit");
+        document.getElementById("renderModal").innerHTML = "";
+        var strEdit = "";
+        strEdit += '<div class="modal-header text-center">';
+        strEdit +=
+          ' <h4 class="modal-title w-100 font-weight-bold">Edit profile</h4>';
+        strEdit +=
+          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        strEdit += '<span aria-hidden="true">&times;</span>';
+        strEdit += "</button>";
+        strEdit += "</div>";
+        strEdit += '<div class="modal-body mx-3">';
+        strEdit += '<div class="md-form mb-5">';
+        strEdit += '<i class="fas fa-user prefix grey-text"></i>';
+        strEdit +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">first name</label>';
+        strEdit +=
+          '<input type="text" id="orangeForm-name" class="form-control validate" required placeholder="first name">';
+        strEdit += "</div>";
+        strEdit += '<div class="md-form mb-5">';
+        strEdit += '<i class="fas fa-user prefix grey-text"></i>';
+        strEdit +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">last name</label>';
+        strEdit +=
+          '<input type="text" id="orangeForm-lastName" class="form-control validate" required placeholder="last name">';
+        strEdit += "</div>";
+        strEdit += ' <div class="md-form mb-4">';
+        strEdit += '<i class="fas fa-lock prefix grey-text"></i>';
+        strEdit +=
+          ' <label data-error="wrong" data-success="right" for="defaultForm-pass">password</label>';
+        strEdit +=
+          '<input type="password" id="defaultForm-pass" class="form-control validate" required minlength="6" placeholder=" * * * * * *"/>';
+        strEdit += "</div>";
+        strEdit += "</div>";
+        strEdit += '<div class="modal-footer d-flex justify-content-center">';
+        strEdit += '<button  class="btn btn-default">Edit</button>';
+        strEdit += "</div>";
+        strEdit += "</div>";
+        strEdit += "</div>";
+        strEdit += "</div>";
+        document.getElementById("renderModal").innerHTML = strEdit;
+      }
+      //--------------------------------------------------------------------------------------------------
+      // # USER LOGOUT
+      //--------------------------------------------------------------------------------------------------
+      function Logout() {
+        sessionStorage.setItem("Login", false);
+        window.location.reload();
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      // # DELETE USER PROFILE
+      //--------------------------------------------------------------------------------------------------
+      //Delete user Ffrom DB
+      function DeleteUser() {
+        if( confirm("Are you sure you want to delete?")==true){
+var email = sessionStorage.getItem("Login");
+        apiFlat =
+          "https://localhost:7001/api/User/Delete User/email/" + email + "";
+        ajaxCall(
+          "DELETE",
+          apiFlat,
+          JSON.stringify(email),
+          DeleteUserSCB,
+          DeleteUserECB
+        );
+        } else{window.location.reload()}
+        
+      }
+      //succeed delete user
+      function DeleteUserSCB(data) {
+        sessionStorage.setItem("Login", false);
+        alert("user deleted");
+        window.location.reload();
+      }
+      //not succeed delete user
+      function DeleteUserECB(error) {
+        alert("user not deleted");
+        window.location.reload();
+      }
+      //--------------------------------------------------------------------------------------------------
+      //                                 NAVBAR SELECT
+      //--------------------------------------------------------------------------------------------------
+      function navbarSelect() {
+        var strLogin = "";
+        if (sessionStorage.getItem("Login") != "false") {
+          strLogin += "<ul>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnEdit" onclick="editProfile()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Edit Profile</a>';
+          strLogin += "</li>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnDelete" onclick="DeleteUser()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Delete account</a>';
+          strLogin += "</li>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnLogOut" onclick="Logout()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Log out</a>';
+          strLogin += "</li>";
+          strLogin += "</ul>";
+        } else {
+          strLogin += "<ul>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnSingIn" onclick="userSingIn()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Sing in</a>';
+          strLogin += "</li>&nbsp&nbsp";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnSingUp" onclick="userSingUp()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Sing up</a>';
+          strLogin += "</li>";
+          strLogin += "</ul>";
+        }
+        document.getElementById("loginDiv").innerHTML = strLogin;
+      }
+    </script>
+  </head>
+  <body>
+    <div id="container" class="row col-12">
+      <div id="nav">
+        <div id="navLogin"></div>
+        <form id="loginModal">
+          <div
+            class="modal fade"
+            id="modalLoginForm"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div id="renderModal" class="modal-content"></div>
+            </div>
+          </div>
+
+          <div id="loginDiv" class="text-center"></div>
+        </form>
+
+        <h1>Flats</h1>
+        <h3>add a new flat</h3>
+      </div>
+      <!-- booking form for new flats -->
+      <form id="newFormFlat" autocomplete="off">
+        <table>
+          <br />
+          <!-- <tr>
+            <th>ID :</th>
+            <td>
+              <input type="number" id="flatId" placeholder="id" required />
+            </td>
+          </tr> -->
+          <tr>
+            <th><br />City :</th>
+            <td>
+              <br /><input
+                type="text"
+                id="flatCity"
+                placeholder="city"
+                required
+                list="dataCity"
+                onkeydown="return /[a-z]/i.test(event.key)"
+              />
+              <datalist id="dataCity">
+                <option>Amsterdam</option>
+                <option>Tel Aviv</option>
+                <option>Hifa</option>
+                <option>Avny Hefetzh</option>
+                <option>Onolulu</option>
+              </datalist>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <br />
+              Address :
+            </th>
+            <td>
+              <br /><input
+                type="text"
+                id="flatAddress"
+                placeholder="address"
+                required
+                maxlength="30"
+              />
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <br />
+              Price :
+            </th>
+            <td>
+              <br />
+              <input
+                type="number"
+                id="flatPrice"
+                placeholder="price"
+                min="1"
+                required
+              />
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <br />
+              Number of rooms :
+            </th>
+            <td>
+              <br />
+              <input
+                type="number"
+                id="flatRooms"
+                placeholder="0"
+                required
+                min="1"
+                max="10"
+              />
+            </td>
+          </tr>
+        </table>
+        <br /><input
+          type="submit"
+          id="btnAddFlat"
+          value="add new flat"
+        /><br /><br />
+      </form>
+
+      <!-- render the flats -->
+      <br /><br />
+      <h3>here u can see all the flats we have</h3>
+      <div id="cardsDiv" class="row">
+        <div id="renderFlatsDiv" class="col-12"></div>
+      </div>
+    </div>
+  </body>
+</html>

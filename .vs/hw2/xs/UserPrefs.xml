@@ -1,0 +1,39 @@
+﻿<Properties StartupConfiguration="{25387DCF-42ED-45C8-AC61-89691B610E8A}|Default">
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.hw2 PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="hw2/Controllers/UserController.cs">
+    <Files>
+      <File FileName="hw2/Controllers/FlatController.cs" Line="88" Column="14" />
+      <File FileName="hw2/Models/Flat .cs" Line="92" Column="10" />
+      <File FileName="hw2/Controllers/UserController.cs" Line="24" Column="10" />
+      <File FileName="hw2/Controllers/VicationController.cs" />
+      <File FileName="hw2/Models/User.cs" Line="2" Column="1" />
+      <File FileName="hw2/Models/DAL/DBservices.cs" Line="761" Column="1" />
+      <File FileName="hw2/Models/Vication.cs" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="hw2" expanded="True">
+            <Node name="hw2" expanded="True">
+              <Node name="Controllers" expanded="True">
+                <Node name="UserController.cs" selected="True" />
+              </Node>
+              <Node name="Models" expanded="True">
+                <Node name="DAL" expanded="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
