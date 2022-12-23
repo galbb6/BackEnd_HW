@@ -6613,11 +6613,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/galbinyamin/Desktop/CV/תיקיה ללא שם/hw2/hw2.csproj",
+      "projectUniqueName": "/Users/galbinyamin/Desktop/Ruppin/צד שרת /טיוטה מטלה 3/HW3/hw2/hw2.csproj",
       "projectName": "hw2",
-      "projectPath": "/Users/galbinyamin/Desktop/CV/תיקיה ללא שם/hw2/hw2.csproj",
+      "projectPath": "/Users/galbinyamin/Desktop/Ruppin/צד שרת /טיוטה מטלה 3/HW3/hw2/hw2.csproj",
       "packagesPath": "/Users/galbinyamin/.nuget/packages/",
-      "outputPath": "/Users/galbinyamin/Desktop/CV/תיקיה ללא שם/hw2/obj/",
+      "outputPath": "/Users/galbinyamin/Desktop/Ruppin/צד שרת /טיוטה מטלה 3/HW3/hw2/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/galbinyamin/.nuget/NuGet/NuGet.Config"

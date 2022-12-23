@@ -882,7 +882,7 @@ public class DBservices
 
 
 
-    public int DeleteUserProfile(string email)
+    public int DeleteUserProfile(string email, int userId)
     {
 
         SqlConnection con;
@@ -900,7 +900,7 @@ public class DBservices
 
         //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
 
-        cmd = CreateCommandWithStoredProcedureDeleteUser("spDeleteUser", con, email);             // create the command
+        cmd = CreateCommandWithStoredProcedureDeleteUser("spDeleteUser", con, email, userId);             // create the command
 
         try
         {
@@ -925,7 +925,7 @@ public class DBservices
     }
 
 
-    private SqlCommand CreateCommandWithStoredProcedureDeleteUser(String spName, SqlConnection con, string email)
+    private SqlCommand CreateCommandWithStoredProcedureDeleteUser(String spName, SqlConnection con, string email, int userId)
     {
 
         SqlCommand cmd = new SqlCommand(); // create the command object
@@ -940,6 +940,7 @@ public class DBservices
 
         cmd.Parameters.AddWithValue("@email", email);
 
+        cmd.Parameters.AddWithValue("@userId", userId);
         return cmd;
     }
 

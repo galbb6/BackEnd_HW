@@ -291,7 +291,7 @@
       }
       //not succeed delete flat
       function DeleteFlatECB(error) {
-        alert("we deleted the flat");
+        alert("we couldnt deleted the flat");
         GetAllFlats();
       }
       //--------------------------------------------------------------------------------------------------
@@ -301,7 +301,7 @@
         if (sessionStorage.getItem("Login") == "false") {
           alert("For order you need to login");
         } else {
-          sessionStorage.setItem("FlatId", flatId);
+          sessionStorage.setItem("flatId", flatId);
           window.location.replace("Vacations.html");
         }
       }
@@ -370,6 +370,7 @@
         } else {
           alert("Login was successful");
           sessionStorage.setItem("Login", data.email);
+          sessionStorage.setItem("userId",data.userId);
           window.location.reload();
         }
       }
@@ -573,7 +574,7 @@
       //--------------------------------------------------------------------------------------------------
       // # DELETE USER PROFILE
       //--------------------------------------------------------------------------------------------------
-      //Delete user Ffrom DB
+      //Delete user from DB
       function DeleteUser() {
         if( confirm("Are you sure you want to delete?")==true){
 var email = sessionStorage.getItem("Login");
@@ -656,9 +657,9 @@ var email = sessionStorage.getItem("Login");
 
           <div id="loginDiv" class="text-center"></div>
         </form>
-
-        <h1>Flats</h1>
-        <h3>add a new flat</h3>
+      
+        <h2 id="headerF">Flats</h2>
+        <h4>add a new flat</h4>
       </div>
       <!-- booking form for new flats -->
       <form id="newFormFlat" autocomplete="off">

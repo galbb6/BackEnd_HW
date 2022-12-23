@@ -30,56 +30,74 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
     />
+    <script src="../js/userFunctions.js"></script>
+
     <title>Vacations</title>
     <script>
       var StartDate;
       var EndDate;
+      //--------------------------------------------------------------------------------------------------
+      // #  SUBMIT FORM , DETAILS ORDER AND NAVBAR
+      //--------------------------------------------------------------------------------------------------
 
       $(document).ready(function () {
+        sessionStorage.getItem("UserNextStep","");
+        navbarSelectVacation();
+        detailsOrderID();
+        
         $("#newFormVac").submit(function () {
           AddVication();
           return false;
         });
       });
-
+      //--------------------------------------------------------------------------------------------------
+      //                                    VACATION FUNCTIONS
+      //--------------------------------------------------------------------------------------------------
+      //--------------------------------------------------------------------------------------------------
+      // # INSERT VACATION
+      //--------------------------------------------------------------------------------------------------
       //add a new vacation
 
       function AddVication() {
-        var flatId = sessionStorage.getItem("FlatId");
-        var userId = $("#userId").val();
-        var idVac = $("#vacID").val();
+        var flatId = sessionStorage.getItem("flatId");
+        var userId = sessionStorage.getItem("userId");
+        var id = 0;
 
-        var vication = {
+        var vacation = {
           StartDate: StartDate,
           EndDate: EndDate,
           UserId: userId,
           FlatId: flatId,
-          Id: idVac,
+          Id: id,
         };
 
-        if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-          apiVacations = "https://localhost:7001/api/Vication";
-        } else {
-          apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
+        // if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+        //   apiVacations = "https://localhost:7001/api/Vication";
+        // } else {
+        //   apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
 
         // }
-        apiFlat = "https://localhost:7001/api/Flat/Get All Flats";
+        apiVacations = "https://localhost:7001/api/Vication/Insert Vacation";
         ajaxCall(
           "POST",
           apiVacations,
-          JSON.stringify(vication),
+          JSON.stringify(vacation),
           addVacSCB,
           addVacECB
         );
       }
+
       //succeed to add vacation
       function addVacSCB(data) {
-        $("#userId").val(""), $("#vacID").val("");
+        alert("vacation added");
       }
       //not succeed to add vacation
       function addVacECB(error) {
-        alert("error");
+        alert("we could not added the vacation. please choose another date.");
       }
+      //--------------------------------------------------------------------------------------------------
+      // # GET ALL VACATIONS
+      //--------------------------------------------------------------------------------------------------
 
       //reder all the vacations in the list
       function GetAllVication() {
@@ -110,6 +128,9 @@
               " </p>";
             rendVac +=
               '<p class="text-card"> End day :' + data[index].endDate + " </p>";
+              rendVac+= '<br><div class="btnDeleteFlat"><input type="button" value="Delete" onclick="DeleteVacation(' +
+              data[index].id +
+              ')"></div>';
 
             rendVac += "</div>";
             document.getElementById("renderVacsDiv").innerHTML += rendVac;
@@ -120,49 +141,148 @@
       function GetAllVacsECB(error) {
         alert("error");
       }
+     
+      //--------------------------------------------------------------------------------------------------
+      // # UPDATE VACATION
+      //--------------------------------------------------------------------------------------------------
+
+      //--------------------------------------------------------------------------------------------------
+      // # DELETE VACATION
+      //--------------------------------------------------------------------------------------------------
+      function DeleteVacation(id) {
+        if (confirm("Are you sure you want to delete this vacation?")==true) {
+           apiVacations =
+          "https://localhost:7001/api/Vication/Delete Vacation/id/" +
+          JSON.stringify(id) +
+          "";
+
+        ajaxCall(
+          "DELETE",
+          apiVacations,
+          JSON.stringify(flatId),
+          DeleteVacationSCB,
+          DeleteVacarionECB
+        );
+        } else{window.location.reload()}
+       
+      }
+      //succeed delete flat
+      function DeleteVacationSCB(data) {
+        alert("we deleted the vacation");
+        
+      }
+      //not succeed delete flat
+      function DeleteVacarionECB(error) {
+        alert("we couldnt deleted the flat");
+        
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      //                                    USER FUNCTIONS
+      //--------------------------------------------------------------------------------------------------
+
+      //--------------------------------------------------------------------------------------------------
+      // # USER LOGOUT
+      //--------------------------------------------------------------------------------------------------
+      function Logout() {
+        if ( confirm("Logout?")==true) {
+          sessionStorage.setItem("Login", false);
+        window.location.reload();
+        window.location.replace("flat.html");
+        }else{window.location.reload()}
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      // # DELETE USER PROFILE
+      //--------------------------------------------------------------------------------------------------
+      //Delete user from DB
+      function DeleteUser() {
+        if (confirm("Are you sure you want to delete?") == true) {
+          var email = sessionStorage.getItem("Login");
+          var userId=sessionStorage.getItem("userId");
+          apiVacations =
+            "https://localhost:7001/api/User/Delete User/email/" + email + "/userId/"+userId;
+          ajaxCall(
+            "DELETE",
+            apiVacations,
+            "",
+            DeleteUserSCB,
+            DeleteUserECB
+          );
+        } else {
+          window.location.reload();
+        }
+      }
+      //succeed delete user
+      function DeleteUserSCB(data) {
+        sessionStorage.setItem("Login", false);
+        alert("user deleted");
+        window.location.reload();
+      }
+      //not succeed delete user
+      function DeleteUserECB(error) {
+        alert("user not deleted");
+        window.location.reload();
+      }
+
+      //--------------------------------------------------------------------------------------------------
+      //                                      NAVBAR SELECT
+      //--------------------------------------------------------------------------------------------------
+      function navbarSelectVacation() {
+        var strLogin = "";
+        strLogin += "<ul>";
+        strLogin += "<li>";
+        strLogin +=
+          '<label href="" id="BtnDelete" onclick="DeleteUser()" class="btn btn-default btn-rounded mb-4" >Delete account</label>';
+        strLogin += "</li>";
+        strLogin += "<li>";
+        strLogin +=
+          '<label href="" id="BtnLogOut" onclick="Logout()" class="btn btn-default btn-rounded mb-4">Log out</label>';
+        strLogin += "</li>";
+        strLogin += "</ul>";
+
+        document.getElementById("loginDiv").innerHTML = strLogin;
+      }
+      //--------------------------------------------------------------------------------------------------
+      // # BACK TO FLATS PAGE
+      //--------------------------------------------------------------------------------------------------
       //back to the flats page
       function backToFlats() {
         window.location.replace("flat.html");
-      };
-    }
+      }
+      //--------------------------------------------------------------------------------------------------
+      // # RENDER THE DETAILS OF THE ORDER
+      //--------------------------------------------------------------------------------------------------
+      function detailsOrderID() {
+        var strOrder = "";
+        strOrder += "<br><h5>";
+        strOrder +=
+          "We are glad that you chose to book a vacation with us. All you have to do is choose suitable dates";
+        strOrder += "</h5>";
+        strOrder += "<p>";
+        strOrder += "User number : " + sessionStorage.getItem("userId");
+        strOrder += "</p>";
+        strOrder += "<p>";
+        strOrder += " Selected flat : " + sessionStorage.getItem("flatId");
+        strOrder += "</p>";
+        document.getElementById("detailsOrder").innerHTML = strOrder;
+      }
     </script>
-
   </head>
   <body>
     <div id="containerV" class="row col-12">
-      <h1>Vacations</h1>
-      <h3>Enter a new Vication</h3>
+      <div id="nav">
+        <div id="navLogin"></div>
+        <div id="loginModal">
+          <div id="loginDiv" class="text-center"></div>
+        </div>
+      </div>
+
+      <h2 id="headerV">Order Vacation</h2>
+      <div id="detailsOrder"></div>
       <form id="newFormVac">
         <br />
         <table>
-          <tr>
-            <td>
-              <span> Vacation Id :</span>
-            </td>
-            <td>
-              <input
-                type="number"
-                id="vacID"
-                placeholder="vacation id"
-                required
-                max="10000"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td><br /><span> User Id :</span></td>
-            <td>
-              <br />
-              <input
-                type="number"
-                id="userId"
-                placeholder="User id"
-                required
-                max="1000"
-              />
-            </td>
-            <br />
-          </tr>
           <tr>
             <td><br /><span> Dates :</span></td>
             <td>
@@ -181,37 +301,30 @@
         <br />
         <br />
 
-        
         <input type="submit" id="btnAddVac" value="add new vacation" />
-        <input
-          type="button"
-          id="btnBackToFlats"
-          value="Back to flats"
-          onclick="backToFlats()"
-        /><br /><br />
+        <br /><br />
       </form>
+      
       <script>
         $(function () {
-            $('input[name="daterange"]').daterangepicker(
-              {
-                opens: "left",
-                maxSpan: {
-                  days: 10,
-                },
+          $('input[name="daterange"]').daterangepicker(
+            {
+              opens: "left",
+              maxSpan: {
+                days: 10,
               },
-              function (start, end, label) {
-                StartDate = start._d;
-                EndDate = end._d;
-              }
-            );
-          });
+            },
+            function (start, end, label) {
+              StartDate = start._d;
+              EndDate = end._d;
+            }
+          );
+        });
       </script>
-      <h3>To see all vication Click here</h3>
       <div id="getAllVacs">
         <br />
-        <button type="submit" onclick="GetAllVication()">
-          Get All Vacations
-        </button>
+        <button type="submit" onclick="GetAllVication()">Get All Vacations</button>
+        <button type="submit" onclick="backToFlats()">Back to flats</button>
       </div>
 
       <div id="cardsDivVac" class="row">
@@ -220,4 +333,3 @@
     </div>
   </body>
 </html>
-      

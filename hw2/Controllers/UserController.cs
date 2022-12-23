@@ -88,11 +88,11 @@ namespace AirBnb_Part_2.Controllers
         // # DELETE USER                                
         //--------------------------------------------------------------------------------------------------
         // DELETE api/<UserController>/5
-        [HttpDelete("Delete User/email/{email}")]
-        public bool Delete(string email)
+        [HttpDelete("Delete User/email/{email}/userId/{userId}")]
+        public bool Delete(string email, int userId)
         {
            
-            int temp = UserProfile.DeleteUserProfile(email);
+            int temp = UserProfile.DeleteUserProfile(email,userId);
             if (temp > 0)
             {
                 return true;

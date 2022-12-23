@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "YN97wD5U8sENslk5oEAp2v8arHtPMDVaRmFr5aLHsLodiYQu0akyoC4RSUlTlHalIwmg8fQOTivi6bnDcyNETQ==",
+  "dgSpecHash": "OjjlgjtmIsdYK/MEL9KpGWGm9TYlTWMQ4KC0U69yYZUs+1rvtaYtyI1Jj1cyZXWAto5XAUTeynR/MSOhONwScQ==",
   "success": true,
-  "projectFilePath": "/Users/galbinyamin/Desktop/CV/תיקיה ללא שם/hw2/hw2.csproj",
+  "projectFilePath": "/Users/galbinyamin/Desktop/Ruppin/צד שרת /טיוטה מטלה 3/HW3/hw2/hw2.csproj",
   "expectedPackageFiles": [
     "/Users/galbinyamin/.nuget/packages/google.protobuf/3.19.4/google.protobuf.3.19.4.nupkg.sha512",
     "/Users/galbinyamin/.nuget/packages/k4os.compression.lz4/1.2.6/k4os.compression.lz4.1.2.6.nupkg.sha512",

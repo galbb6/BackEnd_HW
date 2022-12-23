@@ -64,9 +64,17 @@ namespace AirBnb_Part_2.Controllers
         //--------------------------------------------------------------------------------------------------
         // POST api/<VixationController>
         [HttpPost("Insert Vacation")]
-        public int Post([FromBody] Vacation V)
+        public bool Post([FromBody] Vacation V)
+
         {
-            return V.Insert(V);
+            int temp = V.Insert(V);
+            if (temp > 0)
+            {
+                return true;
+
+            }
+            else return false;
+           
         }
 
         //--------------------------------------------------------------------------------------------------
@@ -97,19 +105,19 @@ namespace AirBnb_Part_2.Controllers
         // # DELETE VACATION                               
         //--------------------------------------------------------------------------------------------------
         // DELETE api/<VixationController>/5
-        [HttpDelete("Delete Vacation By{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("Delete Vacation/id/{id}")]
+        public bool Delete(int id)
         {
             Vacation v = new Vacation();
             int temp = v.DeleteVacation(id);
             if (temp > 0)
             {
-                return Ok();
+                return true;
             }
             else
 
             {
-                return NotFound("id " + id.ToString() + " was not found");
+                return false;
             }
 
 

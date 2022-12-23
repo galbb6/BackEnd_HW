@@ -74,12 +74,15 @@ input {
   /* font-family: "Courier New", Courier, monospace; */
   font-size: 15px;
   border-radius: 8px;
+  width: 9%;
+margin: auto;
 }
 #cardsDivVac {
   padding-left: 6px;
 }
 #fontDate {
   font-size: 13px;
+  
 }
 #getAllVacs > button {
   /* font-family: "Courier New", Courier, monospace; */
@@ -108,7 +111,7 @@ li {
     margin-top: 10px;
 
 }
-#BtnSingIn, #BtnSingUp, #BtnEdit, #BtnLogOut, #BtnDelete{
+#BtnSingIn, #BtnSingUp, #BtnEdit, #BtnLogOut, #BtnDelete, #BtnBack{
     background-color:azure;
     border-color: azure;
 }
@@ -121,5 +124,6 @@ color: black;
     float: left;
     
 }
-
-
+#headerV , #headerF {
+  margin-top: 50px;
+}
