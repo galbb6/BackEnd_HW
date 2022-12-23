@@ -71,12 +71,12 @@
           Id: id,
         };
 
-        // if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-        //   apiVacations = "https://localhost:7001/api/Vication";
-        // } else {
-        //   apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+          apiVacations = "https://localhost:7001/api/Vication";
+        } else {
+          apiFlat = "http://proj.ruppin.ac.il/cgroup33/test2/tar1/swagger/index.html";
 
-        // }
+        }
         apiVacations = "https://localhost:7001/api/Vication/Insert Vacation";
         ajaxCall(
           "POST",
@@ -153,13 +153,13 @@
         if (confirm("Are you sure you want to delete this vacation?")==true) {
            apiVacations =
           "https://localhost:7001/api/Vication/Delete Vacation/id/" +
-          JSON.stringify(id) +
+          id +
           "";
 
         ajaxCall(
           "DELETE",
           apiVacations,
-          JSON.stringify(flatId),
+          "",
           DeleteVacationSCB,
           DeleteVacarionECB
         );
@@ -169,6 +169,7 @@
       //succeed delete flat
       function DeleteVacationSCB(data) {
         alert("we deleted the vacation");
+        window.location.reload();
         
       }
       //not succeed delete flat

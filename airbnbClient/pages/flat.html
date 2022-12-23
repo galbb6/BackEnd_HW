@@ -424,7 +424,7 @@
         strSingUp +=
           ' <label data-error="wrong" data-success="right" for="defaultForm-pass">password</label>';
         strSingUp +=
-          '<input type="password" id="defaultForm-pass" class="form-control validate" required minlength="6" min="1" placeholder=" * * * * * *"/>';
+          '<input type="password" id="defaultForm-pass" class="form-control validate" required minlength="6"  placeholder=" * * * * * *"/>';
         strSingUp += "</div>";
         strSingUp += "</div>";
         strSingUp += '<div class="modal-footer d-flex justify-content-center">';
@@ -577,13 +577,14 @@
       //Delete user from DB
       function DeleteUser() {
         if( confirm("Are you sure you want to delete?")==true){
-var email = sessionStorage.getItem("Login");
+        var email = sessionStorage.getItem("Login");
+        var userId= sessionStorage.getItem("userId");
         apiFlat =
-          "https://localhost:7001/api/User/Delete User/email/" + email + "";
+          "https://localhost:7001/api/User/Delete User/email/" + email + "/userId/"+userId;
         ajaxCall(
           "DELETE",
           apiFlat,
-          JSON.stringify(email),
+          "",
           DeleteUserSCB,
           DeleteUserECB
         );
