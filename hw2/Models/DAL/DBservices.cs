@@ -945,10 +945,10 @@ public class DBservices
 
 
     //--------------------------------------------------------------------------------------------------
-    // # Access USER From DB                              
+    // # DELETE USER From DB                              
     //--------------------------------------------------------------------------------------------------
 
-    public UserProfile GetAccessFromDB(string email, string password)
+    public int GetAccessFromDB(string email, string password)
     {
 
         SqlConnection con;
@@ -965,22 +965,13 @@ public class DBservices
         }
 
         //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
- UserProfile tempUser = new UserProfile();
+
         cmd = CreateCommandWithStoredProcedureGetAccess("spGetUserAccess", con, email,password);             // create the command
 
         try
         {
-            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
-            while (dataReader.Read())
-            {
-               
-                tempUser.UserId = Convert.ToInt32(dataReader["UserId"]);
-                tempUser.UserPassword = Convert.ToString(dataReader["UserPassword"]);
-                tempUser.familyName = Convert.ToString(dataReader["familyName"]);
-                tempUser.firstName = Convert.ToString(dataReader["firstName"]);
-                tempUser.email = Convert.ToString(dataReader["email"]);
-               
-            }
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
         }
         catch (Exception ex)
         {
@@ -996,7 +987,7 @@ public class DBservices
                 con.Close();
             }
         }
-        return tempUser;
+
     }
 
 

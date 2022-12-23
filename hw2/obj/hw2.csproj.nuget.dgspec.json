@@ -1,31 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ori\\OneDrive\\מסמכים\\GitHub\\BackEnd_HW\\hw2\\hw2.csproj": {}
+    "/Users/galbinyamin/Desktop/BackEnd_HW/hw2/hw2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ori\\OneDrive\\מסמכים\\GitHub\\BackEnd_HW\\hw2\\hw2.csproj": {
+    "/Users/galbinyamin/Desktop/BackEnd_HW/hw2/hw2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ori\\OneDrive\\מסמכים\\GitHub\\BackEnd_HW\\hw2\\hw2.csproj",
+        "projectUniqueName": "/Users/galbinyamin/Desktop/BackEnd_HW/hw2/hw2.csproj",
         "projectName": "hw2",
-        "projectPath": "C:\\Users\\Ori\\OneDrive\\מסמכים\\GitHub\\BackEnd_HW\\hw2\\hw2.csproj",
-        "packagesPath": "C:\\Users\\Ori\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ori\\OneDrive\\מסמכים\\GitHub\\BackEnd_HW\\hw2\\obj\\",
+        "projectPath": "/Users/galbinyamin/Desktop/BackEnd_HW/hw2/hw2.csproj",
+        "packagesPath": "/Users/galbinyamin/.nuget/packages/",
+        "outputPath": "/Users/galbinyamin/Desktop/BackEnd_HW/hw2/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Ori\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/galbinyamin/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -80,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.100/RuntimeIdentifierGraph.json"
         }
       }
     }
