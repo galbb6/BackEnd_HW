@@ -948,7 +948,7 @@ public class DBservices
     // # GET ACCESS USER From DB                              
     //--------------------------------------------------------------------------------------------------
 
-    public UserProfile GetAccessFromDB(string email, string password)
+    public UserProfile GetAccessFromDB(string email)
     {
 
         SqlConnection con;
@@ -966,7 +966,7 @@ public class DBservices
 
         //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
         UserProfile tempUser = new UserProfile();
-        cmd = CreateCommandWithStoredProcedureGetAccess("spGetUserAccess", con, email, password);             // create the command
+        cmd = CreateCommandWithStoredProcedureGetAccess("spGetUserAccess", con, email);             // create the command
 
         try
         {
@@ -1001,7 +1001,7 @@ public class DBservices
     
 
 
-    private SqlCommand CreateCommandWithStoredProcedureGetAccess(String spName, SqlConnection con, string email, string password)
+    private SqlCommand CreateCommandWithStoredProcedureGetAccess(String spName, SqlConnection con, string email)
     {
 
         SqlCommand cmd = new SqlCommand(); // create the command object
@@ -1015,7 +1015,6 @@ public class DBservices
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
 
         cmd.Parameters.AddWithValue("@email", email);
-        cmd.Parameters.AddWithValue("@password", password);
 
         return cmd;
     }

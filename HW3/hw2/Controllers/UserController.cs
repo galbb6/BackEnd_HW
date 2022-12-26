@@ -31,12 +31,12 @@ namespace AirBnb_Part_2.Controllers
         //--------------------------------------------------------------------------------------------------
 
         // GET api/<UserController>/5
-        [HttpGet("email/{email}/password/{password}")]
-        public UserProfile GetUser(string email, string password)
+        [HttpGet("email/{email}")]
+        public UserProfile GetUser(string email)
         {
 
             UserProfile user = new UserProfile();
-            user = user.GetAccess(email,password);
+            user = user.GetAccess(email);
             if (user.email != null)
             {
                 return user;
@@ -88,7 +88,7 @@ namespace AirBnb_Part_2.Controllers
         // # DELETE USER                                
         //--------------------------------------------------------------------------------------------------
         // DELETE api/<UserController>/5
-        [HttpDelete("{email}")]
+        [HttpDelete("email/{email}")]
         public bool Delete(string email)
         {
            

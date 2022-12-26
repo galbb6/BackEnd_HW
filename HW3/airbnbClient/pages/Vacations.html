@@ -157,12 +157,12 @@
       //--------------------------------------------------------------------------------------------------
       function DeleteVacation(id) {
         if (confirm("Are you sure you want to delete this vacation?")==true) {
-                
+                var apiVacationsDelete=apiVacations+"/id/"+id;
 
         ajaxCall(
           "DELETE",
-          apiVacations,
-          JSON.stringify(id),
+          apiVacationsDelete,
+          "",
           DeleteVacationSCB,
           DeleteVacarionECB
         );
@@ -204,14 +204,9 @@
       function DeleteUser() {
         if (confirm("Are you sure you want to delete?") == true) {
           var email = sessionStorage.getItem("Login");
-          
-          ajaxCall(
-            "DELETE",
-            apiUser,
-            email,
-            DeleteUserSCB,
-            DeleteUserECB
-          );
+          var apiUserDelete=apiUser+"/email/"+email;
+
+          ajaxCall("DELETE", apiUserDelete, "", DeleteUserSCB, DeleteUserECB);
         } else {
           window.location.reload();
         }

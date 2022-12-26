@@ -56,11 +56,11 @@ namespace AirBnb_Part_2.Models
         //--------------------------------------------------------------------------------------------------
         // # FIND USER PROFILE                             
         //--------------------------------------------------------------------------------------------------
-        public UserProfile GetAccess(string email, string password)
+        public UserProfile GetAccess(string email)
         {
             DBservices dbs = new DBservices();
 
-            return dbs.GetAccessFromDB(email, password);
+            return dbs.GetAccessFromDB(email);
         }
 
 

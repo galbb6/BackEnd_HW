@@ -99,7 +99,7 @@ namespace AirBnb_Part_2.Controllers
         // # DELETE FLAT                            
         //--------------------------------------------------------------------------------------------------
 
-        [HttpDelete("{flatId}")]
+        [HttpDelete("flatId/{flatId}")]
         public bool Delete(int flatId)
         {
             
