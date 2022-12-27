@@ -17,16 +17,14 @@
         //--------------------------------------------------------------------------------------------------
         public int Insert(Vacation v)
         {
+            
           try
             {
+                OrderesList = Read();
             foreach (Vacation item in OrderesList)
             {
-                if (item.id == this.id )
-                {
-                    return 0;
-
-                }
-                else if (this.CheckVicationDates())
+               
+                if (this.CheckVicationDates())
                 {
                         return 0;
                 }               
@@ -106,7 +104,7 @@
             // הפונקציה תחזיר אמת במידה והדירה כבר קיימת בתאריכים אלו
             foreach (Vacation item in OrderesList)
             {
-                if (item.FlatId == this.FlatId)
+                if (item.email == this.email)
                 {
 
                
@@ -115,15 +113,45 @@
 
                     return true;
                  }
-                 if (this.EndDate >= item.StartDate && this.StartDate <= item.EndDate)
+                 if (this.EndDate >= item.StartDate && this.EndDate <= item.EndDate)
                  {
                     return true;
+                 }
+                 if (this.StartDate<=item.StartDate && this.EndDate>=item.EndDate)
+                 {
+                     return true;
                  }
 
                  
                 }
             }
-                  return false;
+
+            foreach (Vacation item in OrderesList)
+            {
+                if (item.FlatId == this.FlatId)
+                {
+
+
+                    if (this.StartDate >= item.StartDate && this.StartDate <= item.EndDate)
+                    {
+
+                        return true;
+                    }
+                    if (this.EndDate >= item.StartDate && this.EndDate <= item.EndDate)
+                    {
+                        return true;
+                    }
+                    if (this.StartDate <= item.StartDate && this.EndDate >= item.EndDate)
+                    {
+                        return true;
+                    }
+
+
+                }
+            }
+
+
+            return false;
         }
 
       

@@ -95,7 +95,12 @@
 
       //succeed to add vacation
       function addVacSCB(data) {
-        alert("vacation added");
+        if(data==false){
+          addVacECB(data);
+        } else{
+          alert("vacation added");
+        }
+        
       }
       //not succeed to add vacation
       function addVacECB(error) {
@@ -228,6 +233,7 @@
       //--------------------------------------------------------------------------------------------------
       function navbarSelectVacation() {
         var strLogin = "";
+        strLogin+='<h5>Hello '+sessionStorage.getItem("userName")+' ! </h5>';
         strLogin += "<ul>";
         strLogin += "<li>";
         strLogin +=
@@ -252,17 +258,13 @@
       // # RENDER THE DETAILS OF THE ORDER
       //--------------------------------------------------------------------------------------------------
       function detailsOrderID() {
+        
         var strOrder = "";
         strOrder += "<br><h5>";
         strOrder +=
-          "We are glad that you chose to book a vacation with us. All you have to do is choose suitable dates";
+          "Hello "+sessionStorage.getItem("userName")+" "+sessionStorage.getItem("userFamily") +", We are glad that you chose to book flat number "+sessionStorage.getItem("flatId")+ ".";
         strOrder += "</h5>";
-        strOrder += "<p>";
-        strOrder += "User number : " + sessionStorage.getItem("userId");
-        strOrder += "</p>";
-        strOrder += "<p>";
-        strOrder += " Selected flat : " + sessionStorage.getItem("flatId");
-        strOrder += "</p>";
+        strOrder+="<p>All you have to do is choose suitable dates.</p>";
         document.getElementById("detailsOrder").innerHTML = strOrder;
       }
     </script>

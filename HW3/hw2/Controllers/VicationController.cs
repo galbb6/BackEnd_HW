@@ -67,14 +67,17 @@ namespace AirBnb_Part_2.Controllers
         public bool Post([FromBody] Vacation V)
 
         {
+
             int temp = V.Insert(V);
             if (temp > 0)
             {
                 return true;
 
             }
-            else return false;
-           
+            else
+            {
+                return false;
+            }
         }
 
         //--------------------------------------------------------------------------------------------------
@@ -96,9 +99,6 @@ namespace AirBnb_Part_2.Controllers
             {
                 return NotFound("id " + id.ToString() + " was not update");
             }
-
-
-
 
         }
         //--------------------------------------------------------------------------------------------------

@@ -264,7 +264,7 @@
         alert(
           "flat number " +
             sessionStorage.getItem("flatId") +
-            " - update secceed"
+            " - update succeed"
         );
         window.location.reload();
       }
@@ -368,12 +368,12 @@
           alert("Login failed. Check your email or sing up.");
           $("#defaultForm-email").val("");
           $("#defaultForm-pass").val("");
-        } else if (data.UserPassword == Pass) {
-          sessionStorage.setItem("Login", element.email);
-          sessionStorage.setItem("userId", element.userId);
-          sessionStorage.setItem("userName", element.firstName);
-          sessionStorage.setItem("userFamily", element.familyName);
-          sessionStorage.setItem("userPass", element.UserPassword);
+        } else if (data.userPassword == Pass) {
+          sessionStorage.setItem("Login", data.email);
+          sessionStorage.setItem("userId", data.userId);
+          sessionStorage.setItem("userName", data.firstName);
+          sessionStorage.setItem("userFamily", data.familyName);
+          sessionStorage.setItem("userPass", data.userPassword);
           alert("Login successfuly");
           window.location.reload();
         } else {
@@ -636,6 +636,7 @@
       function navbarSelect() {
         var strLogin = "";
         if (sessionStorage.getItem("Login") != "false") {
+          strLogin+='<h5>Hello '+sessionStorage.getItem("userName")+' ! </h5>';
           strLogin += "<ul>";
           strLogin += "<li>";
           strLogin +=
@@ -689,7 +690,7 @@
         </form>
 
         <h2 id="headerF">Flats</h2>
-        <h4>add a new flat</h4>
+        <h4>Here you can order a flat or insert a new one </h4>
       </div>
       <!-- booking form for new flats -->
       <form id="newFormFlat" autocomplete="off">
