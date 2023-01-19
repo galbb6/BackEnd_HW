@@ -1,0 +1,45 @@
+﻿<Properties StartupConfiguration="{25387DCF-42ED-45C8-AC61-89691B610E8A}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/galbinyamin/Desktop/Ruppin/צד שרת /טיוטה מטלה 3/HW3/hw2/Controllers/VicationController.cs" relfile="hw2/Controllers/VicationController.cs" line="67" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="hw2/Controllers/VicationController.cs">
+    <Files>
+      <File FileName="hw2/Controllers/FlatController.cs" Line="6" Column="36" />
+      <File FileName="hw2/Controllers/UserController.cs" Line="1" Column="1" />
+      <File FileName="hw2/Models/DAL/DBservices.cs" Line="1" Column="1" />
+      <File FileName="hw2/Models/Flat .cs" Line="7" Column="1" />
+      <File FileName="hw2/Properties/launchSettings.json" />
+      <File FileName="hw2/Properties/PublishProfiles/FolderProfile 10.pubxml" />
+      <File FileName="hw2/Properties/PublishProfiles/FolderProfile.pubxml" />
+      <File FileName="hw2/appsettings.json" />
+      <File FileName="hw2/Program.cs" Line="1" Column="1" />
+      <File FileName="hw2/appsettings.Development.json" />
+      <File FileName="hw2/Controllers/VicationController.cs" Line="1" Column="1" />
+      <File FileName="hw2/Models/Vication.cs" Line="1" Column="1" />
+      <File FileName="hw2/Models/User.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="hw2" expanded="True">
+            <Node name="hw2" expanded="True">
+              <Node name="Controllers" expanded="True">
+                <Node name="VicationController.cs" selected="True" />
+              </Node>
+              <Node name="Models" expanded="True">
+                <Node name="DAL" expanded="True" />
+              </Node>
+              <Node name="appsettings.json" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.hw2 PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>

@@ -1,0 +1,11 @@
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/hw2
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/appsettings.Development.json
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/appsettings.json
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/hw2.dll
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/hw2.deps.json
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/hw2.runtimeconfig.json
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/hw2.pdb
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/Microsoft.OpenApi.dll
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/Swashbuckle.AspNetCore.Swagger.dll
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/Swashbuckle.AspNetCore.SwaggerGen.dll
+/Users/galbinyamin/Desktop/Ruppin/צד שרת /HW2/Publish/Swashbuckle.AspNetCore.SwaggerUI.dll
