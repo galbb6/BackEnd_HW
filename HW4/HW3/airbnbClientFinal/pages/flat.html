@@ -31,25 +31,24 @@
       //--------------------------------------------------------------------------------------------------
 
       $(document).ready(function () {
-        apiFlat = "https://localhost:7001/api/Flat";
-        apiUser = "https://localhost:7001/api/User";
-        // if (
-        //   location.hostname === "localhost" ||
-        //   location.hostname === "127.0.0.1"
-        // ) {
-        //   apiFlat = "https://localhost:7001/api/Flat";
-        // } else {
-        //   apiFlat = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Flat";
-        // }
+   
+         if (
+           location.hostname === "localhost" ||
+           location.hostname === "127.0.0.1"
+         ) {
+           apiFlat = "https://localhost:7001/api/Flat";
+         } else {
+         apiFlat = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Flat";
+         }
         GetAllFlats();
-        // if (
-        //   location.hostname === "localhost" ||
-        //   location.hostname === "127.0.0.1"
-        // ) {
-        //   apiUser = "https://localhost:7001/api/User";
-        // } else {
-        //   apiUser = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/User";
-        // }
+         if (
+           location.hostname === "localhost" ||
+           location.hostname === "127.0.0.1"
+         ) {
+           apiUser = "https://localhost:7001/api/User";
+        } else {
+           apiUser = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/User";
+         }
 
         if (
           sessionStorage.getItem("Login") == null ||

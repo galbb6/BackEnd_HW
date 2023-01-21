@@ -42,21 +42,20 @@
 
       $(document).ready(function () {
         sessionStorage.getItem("UserNextStep","");
-        apiVacations = "https://localhost:7001/api/Vication";
-        apiUser ="https://localhost:7001/api/User";
-        // if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-        //   apiVacations = "https://localhost:7001/api/Vication";
+ 
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+          apiVacations = "https://localhost:7001/api/Vication";
 
-        // } else {
-        //   apiVacations = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Vication";
+        } else {
+          apiVacations = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Vication";
 
-        // }
-        // if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-        //   apiUser ="https://localhost:7001/api/User";
-        // } else {
-        //   apiUser = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/User";
+        }
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+          apiUser ="https://localhost:7001/api/User";
+        } else {
+          apiUser = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/User";
 
-        // }  
+        }  
         navbarSelectVacation();
         detailsOrderID();
         
