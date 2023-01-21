@@ -876,8 +876,8 @@ public class DBservices
         cmd.Parameters.AddWithValue("@email", profile.email);
 
         cmd.Parameters.AddWithValue("@UserPassword", profile.UserPassword);
+   
 
-        
 
 
 
@@ -1059,6 +1059,8 @@ public class DBservices
                 tempUser.familyName = Convert.ToString(dataReader["familyName"]);
                 tempUser.firstName = Convert.ToString(dataReader["firstName"]);
                 tempUser.email = Convert.ToString(dataReader["email"]);
+                tempUser.isActive = Convert.ToBoolean(dataReader["isActive"]);
+                tempUser.isAdmin = Convert.ToBoolean(dataReader["isAdmin"]);
 
             }
         }

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.1.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
+    <script src="../js/ajaxcall.js"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+    />
+    <script src="../js/userFunctions.js"></script>
+    <script src="main.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        apiFlat = "https://localhost:7001/api/Flat";
+        apiUser = "https://localhost:7001/api/User";
+        // if (
+        //   location.hostname === "localhost" ||
+        //   location.hostname === "127.0.0.1"
+        // ) {
+        //   apiFlat = "https://localhost:7001/api/Flat";
+        // } else {
+        //   apiFlat = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Flat";
+        // }
+        
+        // if (
+        //   location.hostname === "localhost" ||
+        //   location.hostname === "127.0.0.1"
+        // ) {
+        //   apiUser = "https://localhost:7001/api/User";
+        // } else {
+        //   apiUser = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/User";
+        // }
+
+        if (
+          sessionStorage.getItem("Login") == null ||
+          sessionStorage.getItem("Login") == undefined
+        ) {
+          sessionStorage.setItem("Login", false);
+          window.location.replace("flat.html")
+        }
+        navbarSelect();
+        $("#newFormFlat").submit(function () {
+          PostNewFlat();
+          return false;
+        });
+        $("#loginModal").submit(function () {
+          if (sessionStorage.getItem("UserNextStep") == "Edit") {
+            EditToDB();
+          } else if (sessionStorage.getItem("UserNextStep") == "SingIn") {
+            SingInToDB();
+          } else if (sessionStorage.getItem("UserNextStep") == "SingUp") {
+            SingUpToDB();
+          } else {
+            UpdateFlatToDB();
+          }
+          return false;
+        });
+      });
+
+      function EditToDB() {
+        sessionStorage.setItem("UserNextStep", "Edit");
+
+        var id = $("#flatId").val();
+        var name = $("#orangeForm-name").val();
+        var family = $("#orangeForm-lastName").val();
+        var Email = sessionStorage.getItem("Login");
+        var Pass = $("#defaultForm-pass").val();
+
+        var user = {
+          UserId: id,
+          firstName: name,
+          familyName: family,
+          email: Email,
+          UserPassword: Pass,
+        };
+
+        ajaxCall(
+          "PUT",
+          apiUser,
+          JSON.stringify(user),
+          updateUserSCB,
+          updateUserECB
+        );
+      }
+      //succeed edit profile
+      function updateUserSCB(data) {
+        alert("user " + sessionStorage.getItem("Login") + " update secceed");
+        var userName = $("#orangeForm-name").val();
+        var userFamily = $("#orangeForm-lastName").val();
+        var userPass = $("#defaultForm-pass").val();
+
+        sessionStorage.setItem("userName", userName);
+        sessionStorage.setItem("userFamily", userFamily);
+        sessionStorage.setItem("userPass", userPass);
+        window.location.reload();
+      }
+      //not succeed edit profile
+      function updateUserECB(error) {
+        alert("user update failed");
+        var userName = sessionStorage.getItem("userName");
+        var userFamiliy = sessionStorage.getItem("userFamily");
+        var userPass = sessionStorage.getItem("userPass");
+
+        $("#orangeForm-name").val(userName);
+        $("#orangeForm-lastName").val(userFamiliy);
+        $("#defaultForm-pass").val(userPass);
+      }
+      // edit user profile modal
+      function editProfile() {
+        sessionStorage.setItem("UserNextStep", "Edit");
+        var userName = sessionStorage.getItem("userName");
+        var userFamiliy = sessionStorage.getItem("userFamily");
+        var userPass = sessionStorage.getItem("userPass");
+        document.getElementById("renderModal").innerHTML = "";
+        var strEdit = "";
+        strEdit += '<div class="modal-header text-center">';
+        strEdit +=
+          ' <h4 class="modal-title w-100 font-weight-bold">Edit profile</h4>';
+        strEdit +=
+          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        strEdit += '<span aria-hidden="true">&times;</span>';
+        strEdit += "</button>";
+        strEdit += "</div>";
+        strEdit += '<div class="modal-body mx-3">';
+        strEdit += '<div class="md-form mb-5">';
+        strEdit += '<i class="fas fa-user prefix grey-text"></i>';
+        strEdit +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">first name</label>';
+        strEdit +=
+          '<input type="text" id="orangeForm-name" class="form-control validate" required value="' +
+          userName +
+          '">';
+        strEdit += "</div>";
+        strEdit += '<div class="md-form mb-5">';
+        strEdit += '<i class="fas fa-user prefix grey-text"></i>';
+        strEdit +=
+          '<label data-error="wrong" data-success="right" for="orangeForm-name">last name</label>';
+        strEdit +=
+          '<input type="text" id="orangeForm-lastName" class="form-control validate" required value="' +
+          userFamiliy +
+          '">';
+        strEdit += "</div>";
+        strEdit += ' <div class="md-form mb-4">';
+        strEdit += '<i class="fas fa-lock prefix grey-text"></i>';
+        strEdit +=
+          ' <label data-error="wrong" data-success="right" for="defaultForm-pass">password</label>';
+        strEdit +=
+          '<input type="password" id="defaultForm-pass" class="form-control validate" required minlength="6" value="' +
+          userPass +
+          '">';
+        strEdit += "</div>";
+        strEdit += "</div>";
+        strEdit += '<div class="modal-footer d-flex justify-content-center">';
+        strEdit += '<button  class="btn btn-default">Edit</button>';
+        strEdit += "</div>";
+        strEdit += "</div>";
+        strEdit += "</div>";
+        strEdit += "</div>";
+        document.getElementById("renderModal").innerHTML = strEdit;
+      }
+
+      function Logout() {
+        sessionStorage.setItem("Login", false);
+        window.location.replace("flat.html");
+      }
+
+      function navbarSelect() {
+        var strLogin = "";
+        if (sessionStorage.getItem("Login") != "false") {
+          strLogin +=
+            "<h5>Hello " + sessionStorage.getItem("userName") + " ! </h5>";
+          strLogin += "<ul>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnEdit" onclick="editProfile()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Edit Profile</a>';
+          strLogin += "</li>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnDelete" onclick="DeleteUser()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Delete account</a>';
+          strLogin += "</li>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnLogOut" onclick="Logout()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Log out</a>';
+          strLogin += "</li>";
+          strLogin += "</ul>";
+        } else {
+          strLogin += "<ul>";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnSingIn" onclick="userSingIn()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Sing in</a>';
+          strLogin += "</li>&nbsp&nbsp";
+          strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnSingUp" onclick="userSingUp()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Sing up</a>';
+          strLogin += "</li>";
+          strLogin += "</ul>";
+        }
+        document.getElementById("loginDiv").innerHTML = strLogin;
+      }
+
+      function ReanderAllUsers(){
+       
+        var apiUserGetAll = apiUser;
+        ajaxCall("GET", apiUserGetAll, "", ReanderAllUsersSCB, ReanderAllUsersECB);
+      }
+      //succeed to render the flats
+      function ReanderAllUsersSCB(data) {
+        if (data.lenght == 0) {
+          var str =
+            "We dont have user to show you right now ! ";
+          document.getElementById("renderUserDiv").innerHTML = str;
+        } else {
+          document.getElementById("renderUserDiv").innerHTML = "";
+          for (let index = 0; index < data.length; index++) {
+            var rendUser = "";
+
+            rendUser += '<div class="card col-4" id= "userCard">';
+                rendUser +=
+              "<strong>User id : " + data[index].userId + " </strong> ";
+              rendUser +=
+              '<p class="text-card"> First name : ' + data[index].firstName + " </p>";
+              rendUser +=
+              '<p class="text-card"> Family name : ' +
+              data[index].familyName +
+              " </p>";
+              rendUser +=
+              '<p class="text-card"> Email : ' + data[index].email + " $</p>";
+              rendUser +=
+              '<p class="text-card"> isActive : ' +
+              data[index].isActive +
+              " </p>";
+              rendUser +=
+              '<p class="text-card"> isAdmin : ' +
+              data[index].isAdmin +
+              " </p>";
+              rendUser +=
+              '<br><div class="btnUseIsActive"><input type="button" value="isActive" onclick="isActiveChange(\'' +
+              data[index].email + '\',\''+data[index].isActive+
+              '\')"></div>';
+              rendUser += "</div>";
+            document.getElementById("renderUserDiv").innerHTML += rendUser;
+          }
+        }
+    }
+      //not succeed to render the flats
+      function ReanderAllUsersECB(error) {
+        alert("ERROR - we didnt get the Users");
+      }
+
+function isActiveChange(email,isActive){
+if(isActive === 'true'){
+    var active = false
+}else{
+    var active = true
+}
+changeisActioveApi = apiUser + `/email/${email}/isActive/${active}`
+
+var change = {
+    isActive: active,
+    email: email
+}
+
+ajaxCall(
+          "PUT",
+          changeisActioveApi,
+          JSON.stringify(change),
+          changeisActioveApiSCB,
+          changeisActioveApiECB
+        );
+}
+
+function changeisActioveApiSCB(){
+alert('you changed active Success')
+ReanderAllUsers();
+}
+
+
+function changeisActioveApiECB(){
+
+    alert("ERROR - didnt Change the User active mod");
+}
+
+
+
+
+      
+    </script>
+  </head>
+  <body>
+    <div id="container" class="row col-12">
+      <div id="nav">
+        <div id="logEmail"></div>
+        <div id="navLogin"></div>
+        <form id="loginModal">
+          <div
+            class="modal fade"
+            id="modalLoginForm"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div id="renderModal" class="modal-content"></div>
+            </div>
+          </div>
+
+          <div id="loginDiv" class="text-center"></div>
+          <div>
+            <button type="button" id="getallusersBtn"onclick={ReanderAllUsers()}>Get all users</button>
+          </div>
+          <div id="renderUserDiv"></div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

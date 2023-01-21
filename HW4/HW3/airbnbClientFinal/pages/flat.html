@@ -31,29 +31,32 @@
       //--------------------------------------------------------------------------------------------------
 
       $(document).ready(function () {
-        if (
-          location.hostname === "localhost" ||
-          location.hostname === "127.0.0.1"
-        ) {
-          apiFlat = "https://localhost:7001/api/Flat";
-        } else {
-          apiFlat = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Flat";
-        }
+        apiFlat = "https://localhost:7001/api/Flat";
+        apiUser = "https://localhost:7001/api/User";
+        // if (
+        //   location.hostname === "localhost" ||
+        //   location.hostname === "127.0.0.1"
+        // ) {
+        //   apiFlat = "https://localhost:7001/api/Flat";
+        // } else {
+        //   apiFlat = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Flat";
+        // }
         GetAllFlats();
-        if (
-          location.hostname === "localhost" ||
-          location.hostname === "127.0.0.1"
-        ) {
-          apiUser = "https://localhost:7001/api/User";
-        } else {
-          apiUser = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/User";
-        }
+        // if (
+        //   location.hostname === "localhost" ||
+        //   location.hostname === "127.0.0.1"
+        // ) {
+        //   apiUser = "https://localhost:7001/api/User";
+        // } else {
+        //   apiUser = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/User";
+        // }
 
         if (
           sessionStorage.getItem("Login") == null ||
           sessionStorage.getItem("Login") == undefined
         ) {
           sessionStorage.setItem("Login", false);
+          
         }
         navbarSelect();
         $("#newFormFlat").submit(function () {
@@ -367,19 +370,29 @@
         if (data == undefined || data == null) {
           alert("Login failed. Check your email or sing up.");
           $("#defaultForm-email").val("");
-          $("#defaultForm-pass").val("");
+          return $("#defaultForm-pass").val("");
         } else if (data.userPassword == Pass) {
           sessionStorage.setItem("Login", data.email);
           sessionStorage.setItem("userId", data.userId);
           sessionStorage.setItem("userName", data.firstName);
           sessionStorage.setItem("userFamily", data.familyName);
           sessionStorage.setItem("userPass", data.userPassword);
+          sessionStorage.setItem("userAdmin", data.isAdmin);
+          if(data.isAdmin){
+            alert("Login as Admin successfuly");
+            window.location.replace("Admin.html")
+
+          }else if(data.isActive){
           alert("Login successfuly");
-          window.location.reload();
+         return window.location.reload();
+          }else{
+            return alert("Login failed your account is not active, please conntect the admin!");
+          }
+         
         } else {
           alert("Login failed. Check your password.");
           $("#defaultForm-email").val(data.email);
-          $("#defaultForm-pass").val("");
+          return  $("#defaultForm-pass").val("");
         }
       }
 
@@ -602,7 +615,7 @@
       //--------------------------------------------------------------------------------------------------
       function Logout() {
         sessionStorage.setItem("Login", false);
-        window.location.reload();
+        window.location.replace("flat.html");
       }
 
       //--------------------------------------------------------------------------------------------------

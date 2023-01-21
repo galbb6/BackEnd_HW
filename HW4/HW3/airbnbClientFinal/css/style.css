@@ -127,3 +127,15 @@ color: black;
 #headerV , #headerF {
   margin-top: 50px;
 }
+#getallusersBtn{
+position: relative;
+top:120px;
+  background-color:azure;
+    border-color: azure;
+}
+#renderUserDiv{
+  padding-left: 6px;
+  position: relative;
+  top: 170px;
+
+}
