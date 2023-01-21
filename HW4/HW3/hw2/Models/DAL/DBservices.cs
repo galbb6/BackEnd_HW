@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.Reflection.PortableExecutable;
 using Microsoft.TeamFoundation.Build.WebApi;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
-
+using System.Dynamic;
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -1101,6 +1101,93 @@ public class DBservices
         return cmd;
     }
 
+    
+    //--------------------------------------------------------------------------------------------------
+    // # GET ACCESS admin AVG cities and prices From DB                              
+    //--------------------------------------------------------------------------------------------------
+
+    public List<Object> GetAvgOfCitiesFromDB(int month)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        //String cStr = BuildUpdateCommand(student);      // helper method to build the insert string
+        DataTable avgPricePerNight = new DataTable();
+        // Add the "city" column
+        avgPricePerNight.Columns.Add("city", typeof(string));
+
+        // Add the "avg" column
+        avgPricePerNight.Columns.Add("avg", typeof(double));
+        cmd = CreateCommandWithStoredProcedureGetAccessAdminAvg("[getAvgPricePerNight]", con, month);             // create the command
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            while (dataReader.Read())
+            {
+                DataRow newRow = avgPricePerNight.NewRow();
+                newRow["city"] = Convert.ToString(dataReader["city"]); ;
+                newRow["avg"] = Convert.ToDouble(dataReader["avg"]);
+                avgPricePerNight.Rows.Add(newRow);
+               
+
+            }
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+        List<dynamic> cityAvgList = new List<dynamic>();
+
+        foreach (DataRow row in avgPricePerNight.Rows)
+        {
+            dynamic cityAvg = new ExpandoObject();
+            cityAvg.City = row["city"].ToString();
+            cityAvg.Avg = Convert.ToDouble(row["avg"]);
+
+            cityAvgList.Add(cityAvg);
+        }
+        return cityAvgList;
+    }
 
 
+
+    private SqlCommand CreateCommandWithStoredProcedureGetAccessAdminAvg(String spName, SqlConnection con, int month)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be stored procedure
+
+        cmd.Parameters.AddWithValue("@month", month);
+
+        return cmd;
+    }
 }

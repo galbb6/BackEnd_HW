@@ -1,5 +1,8 @@
 ﻿
 
+using System;
+using System.Data;
+
 namespace AirBnb_Part_2.Models
 {
     public class UserProfile
@@ -78,6 +81,14 @@ namespace AirBnb_Part_2.Models
         }
 
 
+        public List<Object> GetAvgOfCities(int month)
+        {
+            DBservices dbs = new DBservices();
+
+            return dbs.GetAvgOfCitiesFromDB(month);
+
+
+        }
 
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections;
+using System.Data;
 
 
 
@@ -24,7 +25,7 @@ namespace AirBnb_Part_2.Controllers
         {
 
             return UserProfile.Read();
-         
+
         }
         //--------------------------------------------------------------------------------------------------
         // # GET ACCESS FOT USER ACCOUNT                                
@@ -56,8 +57,8 @@ namespace AirBnb_Part_2.Controllers
         public bool Post([FromBody] UserProfile profile)
         {
 
-           int tmp=UserProfile.Insert(profile);
-            if (tmp!=null)
+            int tmp = UserProfile.Insert(profile);
+            if (tmp != null)
             {
                 return true;
             }
@@ -69,20 +70,20 @@ namespace AirBnb_Part_2.Controllers
         //--------------------------------------------------------------------------------------------------
         // PUT api/<UserController>/5
         [HttpPut]
-        public bool Put( [FromBody] UserProfile user)
+        public bool Put([FromBody] UserProfile user)
         {
-                        
-                int temp = UserProfile.UpdateUserProfile(user);
-                if (temp != 0)
-                {
-                    return true;
-                }
-                else
 
-                {
-                    return false;
-                }
-      
+            int temp = UserProfile.UpdateUserProfile(user);
+            if (temp != 0)
+            {
+                return true;
+            }
+            else
+
+            {
+                return false;
+            }
+
         }
         //--------------------------------------------------------------------------------------------------
         // # UPDATE USER TO ACTIVE OR NON ACTIVE                                
@@ -91,7 +92,7 @@ namespace AirBnb_Part_2.Controllers
         [HttpPut("email/{email}/isActive/{isActive}")]
         public bool Put(string email, bool isActive)
         {
-            int temp = UserProfile.setActive(email,isActive);
+            int temp = UserProfile.setActive(email, isActive);
             if (temp != 0)
             {
                 return true;
@@ -110,7 +111,7 @@ namespace AirBnb_Part_2.Controllers
         [HttpDelete("email/{email}")]
         public bool Delete(string email)
         {
-           
+
             int temp = UserProfile.DeleteUserProfile(email);
             if (temp > 0)
             {
@@ -121,7 +122,25 @@ namespace AirBnb_Part_2.Controllers
             {
                 return false;
             }
- 
+
+        }
+
+
+        //--------------------------------------------------------------------------------------------------
+        // # Admin get avg of al cities                              
+        //--------------------------------------------------------------------------------------------------
+        // get api/<UserController>/5
+
+        [HttpGet("admin/month/{month}")]
+        public List<Object> GetAvgOfCitiesAndPrices(int month)
+        {
+
+            UserProfile a = new UserProfile();
+
+            return a.GetAvgOfCities(month);
+
+
+
         }
     }
 }

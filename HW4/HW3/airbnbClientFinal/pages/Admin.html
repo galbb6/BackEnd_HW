@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+
     <script
       src="https://code.jquery.com/jquery-3.6.1.min.js"
       integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
@@ -32,8 +32,6 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
     />
-    <script src="../js/userFunctions.js"></script>
-    <script src="main.js"></script>
 
     <script>
       $(document).ready(function () {
@@ -47,7 +45,7 @@
         // } else {
         //   apiFlat = "https://proj.ruppin.ac.il/cgroup33/test2/tar1/api/Flat";
         // }
-        
+
         // if (
         //   location.hostname === "localhost" ||
         //   location.hostname === "127.0.0.1"
@@ -62,7 +60,7 @@
           sessionStorage.getItem("Login") == undefined
         ) {
           sessionStorage.setItem("Login", false);
-          window.location.replace("flat.html")
+          window.location.replace("flat.html");
         }
         navbarSelect();
         $("#newFormFlat").submit(function () {
@@ -224,16 +222,20 @@
         document.getElementById("loginDiv").innerHTML = strLogin;
       }
 
-      function ReanderAllUsers(){
-       
+      function ReanderAllUsers() {
         var apiUserGetAll = apiUser;
-        ajaxCall("GET", apiUserGetAll, "", ReanderAllUsersSCB, ReanderAllUsersECB);
+        ajaxCall(
+          "GET",
+          apiUserGetAll,
+          "",
+          ReanderAllUsersSCB,
+          ReanderAllUsersECB
+        );
       }
       //succeed to render the flats
       function ReanderAllUsersSCB(data) {
         if (data.lenght == 0) {
-          var str =
-            "We dont have user to show you right now ! ";
+          var str = "We dont have user to show you right now ! ";
           document.getElementById("renderUserDiv").innerHTML = str;
         } else {
           document.getElementById("renderUserDiv").innerHTML = "";
@@ -241,75 +243,133 @@
             var rendUser = "";
 
             rendUser += '<div class="card col-4" id= "userCard">';
-                rendUser +=
+            rendUser +=
               "<strong>User id : " + data[index].userId + " </strong> ";
-              rendUser +=
-              '<p class="text-card"> First name : ' + data[index].firstName + " </p>";
-              rendUser +=
+            rendUser +=
+              '<p class="text-card"> First name : ' +
+              data[index].firstName +
+              " </p>";
+            rendUser +=
               '<p class="text-card"> Family name : ' +
               data[index].familyName +
               " </p>";
-              rendUser +=
+            rendUser +=
               '<p class="text-card"> Email : ' + data[index].email + " $</p>";
-              rendUser +=
+            rendUser +=
               '<p class="text-card"> isActive : ' +
               data[index].isActive +
               " </p>";
-              rendUser +=
+            rendUser +=
               '<p class="text-card"> isAdmin : ' +
               data[index].isAdmin +
               " </p>";
-              rendUser +=
+            rendUser +=
               '<br><div class="btnUseIsActive"><input type="button" value="isActive" onclick="isActiveChange(\'' +
-              data[index].email + '\',\''+data[index].isActive+
-              '\')"></div>';
-              rendUser += "</div>";
+              data[index].email +
+              "','" +
+              data[index].isActive +
+              "')\"></div>";
+            rendUser += "</div>";
             document.getElementById("renderUserDiv").innerHTML += rendUser;
           }
         }
-    }
+      }
       //not succeed to render the flats
       function ReanderAllUsersECB(error) {
         alert("ERROR - we didnt get the Users");
       }
 
-function isActiveChange(email,isActive){
-if(isActive === 'true'){
-    var active = false
-}else{
-    var active = true
-}
-changeisActioveApi = apiUser + `/email/${email}/isActive/${active}`
+      function isActiveChange(email, isActive) {
+        if (isActive === "true") {
+          var active = false;
+        } else {
+          var active = true;
+        }
+        changeisActioveApi = apiUser + `/email/${email}/isActive/${active}`;
 
-var change = {
-    isActive: active,
-    email: email
-}
+        var change = {
+          isActive: active,
+          email: email,
+        };
 
-ajaxCall(
+        ajaxCall(
           "PUT",
           changeisActioveApi,
           JSON.stringify(change),
           changeisActioveApiSCB,
           changeisActioveApiECB
         );
-}
+      }
 
-function changeisActioveApiSCB(){
-alert('you changed active Success')
-ReanderAllUsers();
-}
+      function changeisActioveApiSCB() {
+        alert("you changed active Success");
+        ReanderAllUsers();
+      }
 
+      function changeisActioveApiECB() {
+        alert("ERROR - didnt Change the User active mod");
+      }
 
-function changeisActioveApiECB(){
+      function generateReport() {
+        var month = document.getElementById("month").value;
+        var apiUserGetReport = apiUser + `/admin/month/${month}`;
+        ajaxCall(
+          "GET",
+          apiUserGetReport,
+          JSON.stringify(month),
+          ReanderReportSCB,
+          ReanderReportECB
+        );
 
-    alert("ERROR - didnt Change the User active mod");
-}
+        // Use an Ad Hoc Object to retrieve data from the database using a stored procedure
+      }
 
+      function ReanderReportSCB(data) {
+        alert("import Report successed");
+        if (data.lenght == 0) {
+          var str = "We dont have user to show you right now ! ";
+          document.getElementById("report").innerHTML = str;
+        } else {
+          document.getElementById("report").innerHTML = "";
+          data.forEach(element => {
+    var rendUser = "";
+    rendUser += '<table class="table">';
+    rendUser += '<thead>';
+    rendUser += '<tr>';
+    rendUser += '<th>City</th>';
+    rendUser += '<th>Avg</th>';
+    rendUser += '</tr>';
+    rendUser += '</thead>';
+    rendUser += '<tbody>';
+    rendUser += '<tr>';
+    rendUser += '<td>' + element.City + '</td>';
+    rendUser += '<td>' + element.Avg + '</td>';
+    rendUser += '</tr>';
+    rendUser += '</tbody>';
+    rendUser += '</table>';
+    document.getElementById("report").innerHTML += rendUser;
+})
 
-
-
-      
+        // var reportData = { month: month };
+        //   var xhr = new XMLHttpRequest();
+        //   xhr.open("POST", "getAvgPricePerNight.php", true);
+        //   xhr.setRequestHeader("Content-Type", "application/json");
+        //   xhr.onreadystatechange = function() {
+        //     if (xhr.readyState === 4 && xhr.status === 200) {
+        //       var data = JSON.parse(xhr.responseText);
+        //       var report = "";
+        //       for (var city in data) {
+        //         report += city + ": " + data[city] + "<br>";
+        //       }
+        //       document.getElementById("report").innerHTML = report;
+        //     }
+        //   };
+        //   xhr.send(JSON.stringify(reportData));
+      }
+    }
+      function ReanderReportECB(error) {
+        alert("import Report as faild");
+      }
     </script>
   </head>
   <body>
@@ -332,11 +392,26 @@ function changeisActioveApiECB(){
           </div>
 
           <div id="loginDiv" class="text-center"></div>
-          <div>
-            <button type="button" id="getallusersBtn"onclick={ReanderAllUsers()}>Get all users</button>
+          <div id="adminreport">
+            <h1>Admin Report</h1>
+            <label for="month">Enter a month:</label>
+            <input type="text" id="month" name="month" />
+            <button onclick="generateReport()">Generate Report</button>
+            
           </div>
-          <div id="renderUserDiv"></div>
+          <div>
+            <button
+              type="button"
+              id="getallusersBtn"
+              onclick="{ReanderAllUsers()}"
+            >
+              Get all users
+            </button>
+          </div>
+          
         </form>
+        <div id="report"></div>
+        <div id="renderUserDiv"></div>
       </div>
     </div>
   </body>
