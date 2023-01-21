@@ -81,6 +81,51 @@
         });
       });
 
+
+      function SingInToDB() {
+        var email = $("#defaultForm-email").val();
+        var apiUserSingIn = apiUser + "/email/" + email;
+
+        ajaxCall("GET", apiUserSingIn, "", getAccessSCB, getAccessECB);
+      }
+
+      function getAccessSCB(data) {
+        var Pass = $("#defaultForm-pass").val();
+        if (data == undefined || data == null) {
+          alert("Login failed. Check your email or sing up.");
+          $("#defaultForm-email").val("");
+          return $("#defaultForm-pass").val("");
+        } else if (data.userPassword == Pass) {
+          sessionStorage.setItem("Login", data.email);
+          sessionStorage.setItem("userId", data.userId);
+          sessionStorage.setItem("userName", data.firstName);
+          sessionStorage.setItem("userFamily", data.familyName);
+          sessionStorage.setItem("userPass", data.userPassword);
+          sessionStorage.setItem("userAdmin", data.isAdmin);
+          if(data.isAdmin){
+            alert("Login as Admin successfuly");
+            window.location.replace("Admin.html")
+
+          }else if(data.isActive){
+          alert("Login successfuly");
+         return window.location.reload();
+          }else{
+            return alert("Login failed your account is not active, please conntect the admin!");
+          }
+         
+        } else {
+          alert("Login failed. Check your password.");
+          $("#defaultForm-email").val(data.email);
+          return  $("#defaultForm-pass").val("");
+        }
+      }
+
+      //not succeed to get access
+      function getAccessECB(error) {
+        alert("Login failed");
+        $("#defaultForm-email").val("");
+        $("#defaultForm-pass").val("");
+      }
       function EditToDB() {
         sessionStorage.setItem("UserNextStep", "Edit");
 
@@ -316,7 +361,7 @@
         ajaxCall(
           "GET",
           apiUserGetReport,
-          JSON.stringify(month),
+          "",
           ReanderReportSCB,
           ReanderReportECB
         );
@@ -331,42 +376,31 @@
           document.getElementById("report").innerHTML = str;
         } else {
           document.getElementById("report").innerHTML = "";
-          data.forEach(element => {
-    var rendUser = "";
-    rendUser += '<table class="table">';
-    rendUser += '<thead>';
-    rendUser += '<tr>';
-    rendUser += '<th>City</th>';
-    rendUser += '<th>Avg</th>';
-    rendUser += '</tr>';
-    rendUser += '</thead>';
-    rendUser += '<tbody>';
-    rendUser += '<tr>';
-    rendUser += '<td>' + element.City + '</td>';
-    rendUser += '<td>' + element.Avg + '</td>';
-    rendUser += '</tr>';
-    rendUser += '</tbody>';
-    rendUser += '</table>';
-    document.getElementById("report").innerHTML += rendUser;
-})
 
-        // var reportData = { month: month };
-        //   var xhr = new XMLHttpRequest();
-        //   xhr.open("POST", "getAvgPricePerNight.php", true);
-        //   xhr.setRequestHeader("Content-Type", "application/json");
-        //   xhr.onreadystatechange = function() {
-        //     if (xhr.readyState === 4 && xhr.status === 200) {
-        //       var data = JSON.parse(xhr.responseText);
-        //       var report = "";
-        //       for (var city in data) {
-        //         report += city + ": " + data[city] + "<br>";
-        //       }
-        //       document.getElementById("report").innerHTML = report;
-        //     }
-        //   };
-        //   xhr.send(JSON.stringify(reportData));
+           var rendUser = "";
+            rendUser += '<table class="table">';
+            rendUser += "<thead>";
+            rendUser += "<tr>";
+            rendUser += "<th>City</th>";
+            rendUser += "<th>Avg</th>";
+            rendUser += "</tr>";
+            rendUser += "</thead>";
+            rendUser += "<tbody>";
+          data.forEach((element) => {
+           
+            
+            rendUser += "<tr>";
+            rendUser += "<td>" + element.City + "</td>";
+            rendUser += "<td>" + element.Avg + "</td>";
+            rendUser += "</tr>";
+           
+          });
+           rendUser += "</tbody>";
+            rendUser += "</table>";
+            document.getElementById("report").innerHTML += rendUser;
+        }
       }
-    }
+
       function ReanderReportECB(error) {
         alert("import Report as faild");
       }
@@ -390,14 +424,13 @@
               <div id="renderModal" class="modal-content"></div>
             </div>
           </div>
-
+</form>
           <div id="loginDiv" class="text-center"></div>
           <div id="adminreport">
             <h1>Admin Report</h1>
             <label for="month">Enter a month:</label>
             <input type="text" id="month" name="month" />
             <button onclick="generateReport()">Generate Report</button>
-            
           </div>
           <div>
             <button
@@ -408,8 +441,7 @@
               Get all users
             </button>
           </div>
-          
-        </form>
+        
         <div id="report"></div>
         <div id="renderUserDiv"></div>
       </div>
