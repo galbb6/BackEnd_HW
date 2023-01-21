@@ -17,7 +17,7 @@
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
-    <script src="Vacations.html"></script>
+    
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
@@ -465,13 +465,15 @@
         var family = $("#orangeForm-lastName").val();
         var Email = $("#defaultForm-email").val();
         var Pass = $("#defaultForm-pass").val();
-
+        var isActive = true;
         var user = {
           UserId: id,
           firstName: name,
           familyName: family,
           email: Email,
           UserPassword: Pass,
+          isActive: true,
+          isAdmin:false
         };
 
         ajaxCall(
@@ -489,11 +491,12 @@
         var userName = $("#orangeForm-name").val();
         var userFamily = $("#orangeForm-lastName").val();
         var userPass = $("#defaultForm-pass").val();
-
+        
         sessionStorage.setItem("Login", userEmail);
         sessionStorage.setItem("userName", userName);
         sessionStorage.setItem("userFamily", userFamily);
         sessionStorage.setItem("userPass", userPass);
+        sessionStorage.setItem("userAdmin", data.isAdmin);
         window.location.reload();
       }
       //not success sing up
@@ -614,8 +617,14 @@
       // # USER LOGOUT
       //--------------------------------------------------------------------------------------------------
       function Logout() {
+        sessionStorage.setItem("Login", "");
+        sessionStorage.setItem("userName", "");
+        sessionStorage.setItem("userFamily", "");
+        sessionStorage.setItem("userPass", "");
+        sessionStorage.setItem("userAdmin", "");
         sessionStorage.setItem("Login", false);
         window.location.replace("flat.html");
+
       }
 
       //--------------------------------------------------------------------------------------------------
@@ -651,6 +660,14 @@
         if (sessionStorage.getItem("Login") != "false") {
           strLogin+='<h5>Hello '+sessionStorage.getItem("userName")+' ! </h5>';
           strLogin += "<ul>";
+            if(sessionStorage.getItem("userAdmin") === "true"){
+
+              strLogin += "<li>";
+          strLogin +=
+            '<a href="" id="BtnEdit" onclick="goToAdminPage()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Admin page</a>';
+          strLogin += "</li>";
+            }
+          
           strLogin += "<li>";
           strLogin +=
             '<a href="" id="BtnEdit" onclick="editProfile()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Edit Profile</a>';
@@ -678,6 +695,12 @@
         }
         document.getElementById("loginDiv").innerHTML = strLogin;
       }
+      function goToAdminPage(){
+
+window.location.assign('/admin.html')
+window.location.replace("admin.html");
+}
+
     </script>
   </head>
   <body>

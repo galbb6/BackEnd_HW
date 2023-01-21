@@ -3,8 +3,9 @@
     "",
     "\\HW3",
     "\\HW3\\hw2",
-    "\\HW3\\hw2\\Models"
+    "\\HW3\\hw2\\Models",
+    "\\HW3\\hw2\\Models\\DAL"
   ],
-  "SelectedNode": "\\HW3\\hw2\\Models\\Vication.cs",
+  "SelectedNode": "\\HW3\\hw2\\Models\\DAL\\DBservices.cs",
   "PreviewInSolutionExplorer": false
 }

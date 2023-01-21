@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Page Title</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script
       src="https://code.jquery.com/jquery-3.6.1.min.js"
       integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
@@ -19,20 +17,13 @@
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
-    <script
-      type="text/javascript"
-      src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
-    ></script>
+  
     <link
       rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
     />
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script>
       $(document).ready(function () {
         apiFlat = "https://localhost:7001/api/Flat";
@@ -67,170 +58,27 @@
           PostNewFlat();
           return false;
         });
-        $("#loginModal").submit(function () {
-          if (sessionStorage.getItem("UserNextStep") == "Edit") {
-            EditToDB();
-          } else if (sessionStorage.getItem("UserNextStep") == "SingIn") {
-            SingInToDB();
-          } else if (sessionStorage.getItem("UserNextStep") == "SingUp") {
-            SingUpToDB();
-          } else {
-            UpdateFlatToDB();
-          }
-          return false;
-        });
+       
       });
 
 
-      function SingInToDB() {
-        var email = $("#defaultForm-email").val();
-        var apiUserSingIn = apiUser + "/email/" + email;
-
-        ajaxCall("GET", apiUserSingIn, "", getAccessSCB, getAccessECB);
-      }
-
-      function getAccessSCB(data) {
-        var Pass = $("#defaultForm-pass").val();
-        if (data == undefined || data == null) {
-          alert("Login failed. Check your email or sing up.");
-          $("#defaultForm-email").val("");
-          return $("#defaultForm-pass").val("");
-        } else if (data.userPassword == Pass) {
-          sessionStorage.setItem("Login", data.email);
-          sessionStorage.setItem("userId", data.userId);
-          sessionStorage.setItem("userName", data.firstName);
-          sessionStorage.setItem("userFamily", data.familyName);
-          sessionStorage.setItem("userPass", data.userPassword);
-          sessionStorage.setItem("userAdmin", data.isAdmin);
-          if(data.isAdmin){
-            alert("Login as Admin successfuly");
-            window.location.replace("Admin.html")
-
-          }else if(data.isActive){
-          alert("Login successfuly");
-         return window.location.reload();
-          }else{
-            return alert("Login failed your account is not active, please conntect the admin!");
-          }
-         
-        } else {
-          alert("Login failed. Check your password.");
-          $("#defaultForm-email").val(data.email);
-          return  $("#defaultForm-pass").val("");
-        }
-      }
-
-      //not succeed to get access
-      function getAccessECB(error) {
-        alert("Login failed");
-        $("#defaultForm-email").val("");
-        $("#defaultForm-pass").val("");
-      }
-      function EditToDB() {
-        sessionStorage.setItem("UserNextStep", "Edit");
-
-        var id = $("#flatId").val();
-        var name = $("#orangeForm-name").val();
-        var family = $("#orangeForm-lastName").val();
-        var Email = sessionStorage.getItem("Login");
-        var Pass = $("#defaultForm-pass").val();
-
-        var user = {
-          UserId: id,
-          firstName: name,
-          familyName: family,
-          email: Email,
-          UserPassword: Pass,
-        };
-
-        ajaxCall(
-          "PUT",
-          apiUser,
-          JSON.stringify(user),
-          updateUserSCB,
-          updateUserECB
-        );
-      }
-      //succeed edit profile
-      function updateUserSCB(data) {
-        alert("user " + sessionStorage.getItem("Login") + " update secceed");
-        var userName = $("#orangeForm-name").val();
-        var userFamily = $("#orangeForm-lastName").val();
-        var userPass = $("#defaultForm-pass").val();
-
-        sessionStorage.setItem("userName", userName);
-        sessionStorage.setItem("userFamily", userFamily);
-        sessionStorage.setItem("userPass", userPass);
-        window.location.reload();
-      }
-      //not succeed edit profile
-      function updateUserECB(error) {
-        alert("user update failed");
-        var userName = sessionStorage.getItem("userName");
-        var userFamiliy = sessionStorage.getItem("userFamily");
-        var userPass = sessionStorage.getItem("userPass");
-
-        $("#orangeForm-name").val(userName);
-        $("#orangeForm-lastName").val(userFamiliy);
-        $("#defaultForm-pass").val(userPass);
-      }
+     
       // edit user profile modal
-      function editProfile() {
-        sessionStorage.setItem("UserNextStep", "Edit");
-        var userName = sessionStorage.getItem("userName");
-        var userFamiliy = sessionStorage.getItem("userFamily");
-        var userPass = sessionStorage.getItem("userPass");
-        document.getElementById("renderModal").innerHTML = "";
-        var strEdit = "";
-        strEdit += '<div class="modal-header text-center">';
-        strEdit +=
-          ' <h4 class="modal-title w-100 font-weight-bold">Edit profile</h4>';
-        strEdit +=
-          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
-        strEdit += '<span aria-hidden="true">&times;</span>';
-        strEdit += "</button>";
-        strEdit += "</div>";
-        strEdit += '<div class="modal-body mx-3">';
-        strEdit += '<div class="md-form mb-5">';
-        strEdit += '<i class="fas fa-user prefix grey-text"></i>';
-        strEdit +=
-          '<label data-error="wrong" data-success="right" for="orangeForm-name">first name</label>';
-        strEdit +=
-          '<input type="text" id="orangeForm-name" class="form-control validate" required value="' +
-          userName +
-          '">';
-        strEdit += "</div>";
-        strEdit += '<div class="md-form mb-5">';
-        strEdit += '<i class="fas fa-user prefix grey-text"></i>';
-        strEdit +=
-          '<label data-error="wrong" data-success="right" for="orangeForm-name">last name</label>';
-        strEdit +=
-          '<input type="text" id="orangeForm-lastName" class="form-control validate" required value="' +
-          userFamiliy +
-          '">';
-        strEdit += "</div>";
-        strEdit += ' <div class="md-form mb-4">';
-        strEdit += '<i class="fas fa-lock prefix grey-text"></i>';
-        strEdit +=
-          ' <label data-error="wrong" data-success="right" for="defaultForm-pass">password</label>';
-        strEdit +=
-          '<input type="password" id="defaultForm-pass" class="form-control validate" required minlength="6" value="' +
-          userPass +
-          '">';
-        strEdit += "</div>";
-        strEdit += "</div>";
-        strEdit += '<div class="modal-footer d-flex justify-content-center">';
-        strEdit += '<button  class="btn btn-default">Edit</button>';
-        strEdit += "</div>";
-        strEdit += "</div>";
-        strEdit += "</div>";
-        strEdit += "</div>";
-        document.getElementById("renderModal").innerHTML = strEdit;
-      }
+     
 
       function Logout() {
+        
+        if ( confirm("Logout?")==true) {
+          sessionStorage.setItem("Login", "");
+        sessionStorage.setItem("userName", "");
+        sessionStorage.setItem("userFamily", "");
+        sessionStorage.setItem("userPass", "");
+        sessionStorage.setItem("userAdmin", "");
         sessionStorage.setItem("Login", false);
-        window.location.replace("flat.html");
+          sessionStorage.setItem("Login", false);
+          window.location.reload();
+          window.location.replace("flat.html");
+          }else{window.location.reload()}
       }
 
       function navbarSelect() {
@@ -240,12 +88,13 @@
             "<h5>Hello " + sessionStorage.getItem("userName") + " ! </h5>";
           strLogin += "<ul>";
           strLogin += "<li>";
+            strLogin += "<li>";
           strLogin +=
-            '<a href="" id="BtnEdit" onclick="editProfile()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Edit Profile</a>';
+            '<a href="" id="BtnDelete" onclick="goToAdminPage()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Admin page</a>';
           strLogin += "</li>";
           strLogin += "<li>";
           strLogin +=
-            '<a href="" id="BtnDelete" onclick="DeleteUser()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Delete account</a>';
+            '<a href="" id="BtnDelete" onclick="goback()" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">go back</a>';
           strLogin += "</li>";
           strLogin += "<li>";
           strLogin +=
@@ -266,7 +115,18 @@
         }
         document.getElementById("loginDiv").innerHTML = strLogin;
       }
+      function goback(){
 
+        window.location.assign('/flat.html')
+        window.location.replace("flat.html");
+
+      }
+
+      function goToAdminPage(){
+
+        window.location.assign('/admin.html')
+        window.location.replace("admin.html");
+      }
       function ReanderAllUsers() {
         var apiUserGetAll = apiUser;
         ajaxCall(
@@ -284,39 +144,38 @@
           document.getElementById("renderUserDiv").innerHTML = str;
         } else {
           document.getElementById("renderUserDiv").innerHTML = "";
-          for (let index = 0; index < data.length; index++) {
-            var rendUser = "";
 
-            rendUser += '<div class="card col-4" id= "userCard">';
-            rendUser +=
-              "<strong>User id : " + data[index].userId + " </strong> ";
-            rendUser +=
-              '<p class="text-card"> First name : ' +
-              data[index].firstName +
-              " </p>";
-            rendUser +=
-              '<p class="text-card"> Family name : ' +
-              data[index].familyName +
-              " </p>";
-            rendUser +=
-              '<p class="text-card"> Email : ' + data[index].email + " $</p>";
-            rendUser +=
-              '<p class="text-card"> isActive : ' +
-              data[index].isActive +
-              " </p>";
-            rendUser +=
-              '<p class="text-card"> isAdmin : ' +
-              data[index].isAdmin +
-              " </p>";
-            rendUser +=
-              '<br><div class="btnUseIsActive"><input type="button" value="isActive" onclick="isActiveChange(\'' +
-              data[index].email +
-              "','" +
-              data[index].isActive +
-              "')\"></div>";
-            rendUser += "</div>";
-            document.getElementById("renderUserDiv").innerHTML += rendUser;
-          }
+
+          var rendUser = "";
+
+rendUser += '<table class="table table-striped">';
+rendUser += '<thead>';
+rendUser += '<tr>';
+rendUser += '<th>User id</th>';
+rendUser += '<th>First name</th>';
+rendUser += '<th>Family name</th>';
+rendUser += '<th>Email</th>';
+rendUser += '<th>isActive</th>';
+rendUser += '<th>isAdmin</th>';
+rendUser += '</tr>';
+rendUser += '</thead>';
+rendUser += '<tbody>';
+
+for (var index = 0; index < data.length; index++) {
+    rendUser += '<tr>';
+    rendUser += '<td>' + data[index].userId + '</td>';
+    rendUser += '<td>' + data[index].firstName + '</td>';
+    rendUser += '<td>' + data[index].familyName + '</td>';
+    rendUser += '<td>' + data[index].email + '</td>';
+    rendUser += '<td>' + data[index].isActive + '</td>';
+    rendUser += '<td>' + data[index].isAdmin + '</td>';
+    rendUser += '<td><input type="button" value="isActive" onclick="isActiveChange(\'' + data[index].email + "','" + data[index].isActive + '\')"></td>';
+    rendUser += '</tr>';
+}
+
+rendUser += '</tbody>';
+rendUser += '</table>';
+document.getElementById("renderUserDiv").innerHTML = rendUser
         }
       }
       //not succeed to render the flats
@@ -356,6 +215,12 @@
       }
 
       function generateReport() {
+        var month = document.getElementById("month").value;
+        if(month == null || month == ""){
+
+          return alert("please enter Month before genrate report")
+
+        }
         var month = document.getElementById("month").value;
         var apiUserGetReport = apiUser + `/admin/month/${month}`;
         ajaxCall(
@@ -424,12 +289,13 @@
               <div id="renderModal" class="modal-content"></div>
             </div>
           </div>
+          
 </form>
           <div id="loginDiv" class="text-center"></div>
           <div id="adminreport">
             <h1>Admin Report</h1>
             <label for="month">Enter a month:</label>
-            <input type="text" id="month" name="month" />
+            <input type="text" id="month" name="month" required/>
             <button onclick="generateReport()">Generate Report</button>
           </div>
           <div>
